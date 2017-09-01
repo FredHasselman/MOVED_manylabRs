@@ -2069,8 +2069,7 @@ varfun.Gati.5 <- function(vars){
   return(list(DV        = df.stim$stimDV,
               Condition = df.stim$Condition,
               N         = c( sum(df.stim$Condition%in%"Prominent1st"), NULL))
-  )
-  )
+         )
 }
 
 
