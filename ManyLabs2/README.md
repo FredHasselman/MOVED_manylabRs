@@ -39,8 +39,7 @@ This page contains links to tutorials, information, script files and application
 * Local (might be slow due to limited bandwidth)
 * External host
 
-
-======
+----------
 
 ## Some early tutorials (may contain info that is no longer applicable)    
     
