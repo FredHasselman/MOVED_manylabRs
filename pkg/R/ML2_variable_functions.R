@@ -1674,14 +1674,14 @@ varfun.Gati.1 <- function(vars){
     dfA <- reshape2::melt(dfA,id=c('uID','CounterBalance'),variable.name='itemID',value.name='DV',factorsAsStrings = FALSE)
 
     dfA$itemID <- as.numeric(gsub("(gati(1|2)(s|d)[.])","",dfA$itemID))
-    dfA$Condition <- 0
-    dfA$Condition[dfA$itemID%in%CounterBalanceA$P2nd] <- 1
+    dfA$Condition <- 1
+    dfA$Condition[dfA$itemID%in%CounterBalanceA$P2nd] <- 2
 
     dfB <- reshape2::melt(dfB,id=c('uID','CounterBalance'),variable.name='itemID',value.name='DV',factorsAsStrings = FALSE)
 
     dfB$itemID    <- as.numeric(gsub("(gati(1|2)(s|d)[.])","",dfB$itemID))
-    dfB$Condition <- 0
-    dfB$Condition[dfB$itemID%in%CounterBalanceB$P2nd] <- 1
+    dfB$Condition <- 1
+    dfB$Condition[dfB$itemID%in%CounterBalanceB$P2nd] <- 2
 
     df <- as.data.frame(rbind(dfA,dfB))
 
@@ -1845,12 +1845,6 @@ varfun.Gati.3 <- function(vars){
   CounterBalanceB <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
                           P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
 
-
-    # CounterBalanceB <- list(P1st = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22),
-    #                         P2nd = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21))
-    # CounterBalanceA <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
-    #                         P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
-
     dfA     <- vars[[1]]
     dfB     <- vars[[2]]
 
@@ -1891,58 +1885,9 @@ varfun.Gati.3 <- function(vars){
                         #  N = n()
                      )
 
-#     df.stim.wide <- df.stim %>% select(itemID,`interaction(Condition, CounterBalance)`,stimDV) %>% spread(key=`interaction(Condition, CounterBalance)`,value=stimDV)
-#
-#     df.stim.wide.SD <- df.stim %>% select(itemID,`interaction(Condition, CounterBalance)`,stimSD) %>% spread(key=`interaction(Condition, CounterBalance)`,value=stimSD)
-#
-#     mean(df.stim.wide.N$Prominent1st.CBA, na.rm = T)
-#     mean(df.stim.wide.N$Prominent1st.CBB, na.rm = T)
-#     mean(df.stim.wide.N$Prominent2nd.CBA, na.rm = T)
-#     mean(df.stim.wide.N$Prominent2nd.CBB, na.rm = T)
-#
-#     poolSD.CBA  <- sqrt( ( (1782-1) * 4.37^2 + (1782-1) * 4.42^2 ) / ( (1782-1) +(1782-1) ) )
-#     poolSD.CBB  <- sqrt( ( (1745-1) * 4.41^2 + (1745-1) * 4.25^2 ) / ( (1745-1) +(1745-1) ) )
-#
-#     poolSD.CBA/sqrt(1782)*1.96
-#
-#
-#     df.stim.wide.N <- df.stim %>% select(itemID,`interaction(Condition, CounterBalance)`,N) %>% spread(key=`interaction(Condition, CounterBalance)`,value=N)
-#
-#
-#
-#     df.stim.wide$AsymmetryCBB <- df.stim.wide$Prominent1st.CBB-df.stim.wide$Prominent2nd.CBA
-#
-#
-#     df.stim.wide$AsymmetryCBA <- df.stim.wide$Prominent1st.CBA-df.stim.wide$Prominent2nd.CBB
-#     df.stim.wide$AsymmetryCBB <- df.stim.wide$Prominent1st.CBB-df.stim.wide$Prominent2nd.CBA
-#
-#
-#     df.stim.wide$CounterBalance[!is.na(df.stim.wide$AsymmetryCBA)] <- "CBA-CBB"
-#     df.stim.wide$CounterBalance[!is.na(df.stim.wide$AsymmetryCBB)] <- "CBB-CBA"
-#     df.stim.wide$Asymmetry[!is.na(df.stim.wide$AsymmetryCBA)] <- df.stim.wide$AsymmetryCBA[!is.na(df.stim.wide$AsymmetryCBA)]
-#     df.stim.wide$Asymmetry[!is.na(df.stim.wide$AsymmetryCBB)] <- df.stim.wide$AsymmetryCBB[!is.na(df.stim.wide$AsymmetryCBB)]
-#     df.stim.wide <- df.stim.wide %>% group_by(CounterBalance) %>% mutate(AsymmetryGM = median(Asymmetry))
-#
-#
-#
-#     ggplot(df.stim.wide, aes(y=Asymmetry, x=itemID, group=CounterBalance)) +
-#       geom_hline(yintercept = 0, colour = "grey50") +
-#       geom_point(aes(shape = CounterBalance, colour = CounterBalance)) +
-#       geom_hline(aes(yintercept = AsymmetryGM, colour = CounterBalance, linetype = CounterBalance)) +
-#       geom_label(x=11.5,y=1.2, label="Mean CBB Subject aggregated Asymmetry", size=3) +
-#       geom_label(x=11.5,y=-1.2, label="Mean CBA Subject aggregated Asymmetry",size=3) +
-#       geom_hline(yintercept = 1.301, size = 1, colour = "grey50") +
-#       geom_hline(yintercept = -1.308, size = 1, colour = "grey50") +
-#       ggtitle("Item aggregated data") +
-#       scale_color_brewer(palette = "Dark2") +
-#       scale_x_continuous(breaks=1:22) +
-#       theme_bw() + theme(panel.grid.minor  = element_blank(),
-#                          panel.grid.major.y  = element_blank())
-
-
     return(list(DV        = df.stim$stimDV,
                 Condition = df.stim$Condition,
-                N         = c( sum(df.stim$Condition%in%"Prominent1st"), sum(df.stim$Condition%in%"Prominent2nd"))
+                N         = c( sum(df.stim$Condition%in%"Prominent1st"), NULL)
                 )
            )
 }
@@ -1984,12 +1929,6 @@ varfun.Gati.4 <- function(vars){
                           P2nd = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21))
   CounterBalanceB <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
                           P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
-
-
-    # CounterBalanceB <- list(P1st = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22),
-    #                         P2nd = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21))
-    # CounterBalanceA <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
-    #                         P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
 
     dfA     <- vars[[1]]
     dfB     <- vars[[2]]
@@ -2087,12 +2026,6 @@ varfun.Gati.5 <- function(vars){
   CounterBalanceB <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
                           P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
 
-
-  # CounterBalanceB <- list(P1st = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22),
-  #                         P2nd = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21))
-  # CounterBalanceA <- list(P1st = c(4, 6, 7, 8, 9, 10, 13, 15, 20, 21),
-  #                         P2nd = c(2, 3, 5, 11, 12, 14, 16, 17, 18, 19, 22))
-
   dfA     <- vars[[1]]
   dfB     <- vars[[2]]
 
@@ -2135,7 +2068,7 @@ varfun.Gati.5 <- function(vars){
 
   return(list(DV        = df.stim$stimDV,
               Condition = df.stim$Condition,
-              N         = c( sum(df.stim$Condition%in%"Prominent1st"), sum(df.stim$Condition%in%"Prominent2nd"))
+              N         = c( sum(df.stim$Condition%in%"Prominent1st"), NULL))
   )
   )
 }

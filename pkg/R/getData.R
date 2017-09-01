@@ -84,13 +84,13 @@ get.analyses <- function(studies      = NA,
 
     # WEIRD <- ML2.df$Country%in%c("Australia","Austria","Canada","France","Germany","Hungary","Italy","New Zealand","Poland","Portugal","Serbia","Spain","Sweden", "The Netherlands","UK","USA")
     #
-    # if(!subset%in%"all"){
-    #   if(subset%in%"WEIRD"){
-    #     ML2.df <- ML2.df[WEIRD,]
-    #   } else {
-    #     ML2.df <- ML2.df[!WEIRD,]
-    #   }
-    # }
+     if(!subset%in%"all"){
+       if(subset%in%"WEIRD"){
+         ML2.df <- ML2.df[ML2.df$source.Weird==1,]
+       } else {
+         ML2.df <- ML2.df[ML2.df$source.Weird==0,]
+       }
+     }
 
     # Add a unique ID
     ML2.df$uID = seq(1, nrow(ML2.df))

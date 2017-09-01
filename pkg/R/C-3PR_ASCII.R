@@ -1,19 +1,18 @@
 init <- function(){
-  srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/"
-  setwd(srcDir)
+  # srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/"
+  # setwd(srcDir)
 
   require(devtools)
-  #srcDir <- "https://raw.githubusercontent.com/FredHasselman/ManyLabRs/master/manylabRs/R/"
-  srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manyLabRs/R/"
+  srcDir <- "https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/"
 
-  source(paste0(srcDir,"C-3PR_ASCII.R"))
-  source(paste0(srcDir,'getData.R'))
-  source(paste0(srcDir,'inIT.R'))
-  source(paste0(srcDir,'ML2_variable_functions.R'))
-  source(paste0(srcDir,'fRedsRutils.R'))
+  devtools::source_url(paste0(srcDir,"C-3PR_ASCII.R"))
+  devtools::source_url(paste0(srcDir,'getData.R'))
+  devtools::source_url(paste0(srcDir,'inIT.R'))
+  devtools::source_url(paste0(srcDir,'ML2_variable_functions.R'))
+  devtools::source_url(paste0(srcDir,'fRedsRutils.R'))
 
   # Function inIT will load and -if necessary- install packages passed in a list (unIT will do the reverse operation).
-  in.IT(c("MBESS","reshape2","plyr","dplyr","tidyr","metafor","RCurl","xlsx","broom","httr","compute.es","downloader","car", "lme4", "lmerTest","exact2x2","ggplot2","lattice","latticeExtra","rio"))
+  in.IT(c("MBESS","reshape2","plyr","tidyverse","metafor","RCurl","xlsx","broom","httr","compute.es","downloader","car", "lme4", "lmerTest","exact2x2","ggplot2","gplots","gridExtra","lattice","latticeExtra","rio","scales","lubridate"))
 
   ## ML2.key <<- get.GoogleSheet(data='ML2masteRkey')$df
 }
