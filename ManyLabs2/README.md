@@ -16,7 +16,7 @@ This page contains links to tutorials, information, script files and application
 * [To Data Cleaning Report](http://fredhasselman.com/other/ML2/ML2_data_cleaning.html)
 * [To Analysis-Specific Variable Functions](http://fredhasselman.com/other/ML2/ML2_varfuns.html)
     
-## Github repositories with **R** reproducible code and function libraries
+## Github repositories with **R** reproducible analyses and function libraries
 
 * [A single-file sourceable function library]() - If you do not want to install the package
 * [The manylabRs package](https://github.com/FredHasselman/manylabRs/ManyLabs2/pkg)
