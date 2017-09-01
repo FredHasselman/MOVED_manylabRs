@@ -1,0 +1,59 @@
+---
+title: "ManyLabs2 Analysis-Specific Functions"
+author: '[ManyLabs2](https://osf.io/8cd4r) (Corresponding coder: [Fred Hasselman](https://osf.io/ujgs6/))'
+date: "20 February 2016"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 11
+    highlight: pygments
+    keep_md: yes
+    theme: spacelab
+    toc_depth: 4
+    toc_float: yes
+  pdf_document:
+    fig_caption: yes
+    fig_crop: no
+    fig_height: 8
+    fig_width: 11
+    highlight: zenburn
+    keep_tex: yes
+    latex_engine: xelatex
+    toc: yes
+    toc_depth: 4
+monofont: Gill Sans Light
+mainfont: Calibri
+sansfont: Gill Sans Light
+geometry: a4paper
+---
+
+```{r set-options, echo=FALSE,include=FALSE}
+require(knitr)
+require(formatR)
+require(devtools)
+options(width=500)
+knitr::opts_chunk$set(eval=FALSE,cache=FALSE,prompt=FALSE,comment=NA,message=FALSE,echo=TRUE,warning=FALSE,tidy=FALSE,strip.white=FALSE,size="small")
+```
+
+--------
+
+> **NOTE:** Code review has completed.
+
+* [To Code Review Instructions](http://fredhasselman.com/other/ML2/ML2_RcodeReview.html)
+* [To PoPS Proposal](http://fredhasselman.com/other/ML2/ML2_PoPS_proposal.html)
+* [To Data Cleaning Report (this page)](http://fredhasselman.com/other/ML2/ML2_data_cleaning.html)
+* [To Analysis-Specific Variable Functions](http://fredhasselman.com/other/ML2/ML2_varfuns.html)
+
+--------
+
+# Get the source file
+
+[Here is a sourceable `R` file with the functions](https://github.com/FredHasselman/manylabRs/blob/master/R/ML2_variable_functions.R)
+
+Or source it directly:
+```{r, eval=FALSE}
+library(devtools)
+source_url(url = 'https://raw.githubusercontent.com/FredHasselman/manylabRs/master/R/ML2_variable_functions.R')
+```
+

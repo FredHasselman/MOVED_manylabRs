@@ -1,0 +1,395 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+    \setmainfont{Calibri}
+    \setsansfont{Gill Sans Light}
+    \setmonofont[Mapping=tex-ansi]{Gill Sans Light}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[a4paper]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{48,48,48}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.94,0.87,0.69}{{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.87,0.87,0.75}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.86,0.86,0.80}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.86,0.64,0.64}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.75,0.75,0.82}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.86,0.64,0.64}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.80,0.58,0.58}{{#1}}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.50,0.62,0.50}{{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.94,0.94,0.56}{{#1}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.81,0.69}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.94,0.94,0.56}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.80,0.80,0.80}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.76,0.75,0.62}{{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.80,0.80,0.80}{{#1}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={ManyLabs2 (Corresponding coder: Fred Hasselman)},
+            pdftitle={ManLabs2 R Code Review},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{ManLabs2 R Code Review}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{\href{https://osf.io/8cd4r}{ManyLabs2} (Corresponding coder:
+\href{https://osf.io/ujgs6/}{Fred Hasselman})}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{3 February 2016}
+
+
+
+\begin{document}
+
+\maketitle
+
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\section{Instruction for reviewers}\label{instruction-for-reviewers}
+
+\subsection{Analysis Strategy}\label{analysis-strategy}
+
+The ManyLabs2 data analysis strategy attempts to regard three principles
+that maximize research transparency:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Principle of Equality}: All data should be treated equally by
+  a code. That is, the code should do its job generating results while
+  at the same time being as naive as possible to the particular facts of
+  the study being analysed. This will reduce any chances of bias with
+  respect to the outcomes of a certain dataset or a particular study. If
+  it is necessary to add study specific code, the second principle
+  should be regarded.
+\item
+  \textbf{Principle of Transparency}: All operations that are crucial
+  for obtaining an analysis result should be available for inspection by
+  anyone who wishes to do so. This should be possible without the help
+  of the auhtors that generated the code. The operations concern the
+  application of data filtering rules, computation of variables derived
+  from original measurements, running an analysis and constructing
+  graphs, tables and figures. If full transparency is not possible, the
+  third principle should be regarded.
+\item
+  \textbf{Principle of Reproducibility}: The most basic requirement for
+  analysis results is that they should be reproducable given the
+  original code and the original data set. However, any new
+  implementation of the same analysis strategy in a different context,
+  or application of the code to a different dataset, e.g.~a replication
+  study, should not be problematic. That is, outcomes may differ between
+  data sets, but this should not be attributable to any details of the
+  code or the analysis strategy.
+\end{enumerate}
+
+\subsection{\texttt{R} as a parser of online
+code.}\label{r-as-a-parser-of-online-code.}
+
+The
+\href{https://docs.google.com/document/d/1B5sVz3jlKMGnpxik-cfCeR8ngeQ249bzQExaVd5FzZM/edit}{pre-registered
+Manylabs2 protocol} describes a number of analyses per replication study
+that can be categorised as \textbf{Primary} (target replications per
+site), \textbf{Secondary} (additional analyses per site, e.g.~on
+subgroups), and \textbf{Global} (analyses on the entire dataset).
+
+These \emph{promised analyses} have all been implemented in \texttt{R}
+in a transparent way and this implementation is now ready for an
+independent review.
+
+\subsection{Implementation}\label{implementation}
+
+Functions avalaible in an
+\href{https://github.com/FredHasselman/ManyLabRs/tree/master/manylabRs}{\texttt{R}
+package on GitHub} extract information and instructions about each
+promised analysis a table that is openly accessible, the
+\href{https://docs.google.com/spreadsheets/d/1fqK3WHwFPMIjNVVvmxpMEjzUETftq_DmP5LzEhXxUHA/edit\#gid=769239110}{masteRkey}
+spreadsheet.
+
+Each row in the table represents an analysis, the columns contain
+specific information about the analysis:
+
+\begin{itemize}
+\item
+  Columns A through E are identifiers for study, analysis and slate.
+\item
+  Column F and G contain \texttt{R} commands which will extract and
+  label the columnms from the dataset needed for the analysis.
+\item
+  Column H and I contain filter instructions for cases and subsamnples.
+\item
+  Columns J through L contain information about the nature of the
+  analysis (Global, Primary Secondary).
+\item
+  Column M lists the name of a analysis specific \emph{variable
+  function} (\texttt{varfun.}) which in most cases just reorganises the
+  variables specified in previous columns so they can be passed to the
+  analysis code. In some cases these function perform specific
+  calculations required by the original analyses.
+\item
+  Columns N through S contain information about the statistiscal tests
+\end{itemize}
+
+\subsection{What is in need of review by \texttt{R}
+experts?}\label{what-is-in-need-of-review-by-r-experts}
+
+The code runs and perfoms analyses on the data, that much we know
+\texttt{:)}.
+
+We would like to get your expert opinion on the following:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Does the \texttt{R} code in column O (\texttt{stat.test}) reflect the
+  promised analyses in the protocol?
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    In order to evaluate this you'll need to look at the analysis plan
+    for a specific study in the protocol and figure out whether the
+    \texttt{R} code in rows of column O for that study represents all
+    the tests that is described there.\\
+  \item
+    In many cases this will be straightforward, without any need to
+    actually run any code ooking at the way in which the variables are
+    grouped and labelled and, filters are applied and which settings are
+    used for the analysis, e.g.~direction of the test (column P,
+    \texttt{stat.params}).
+  \item
+    In some cases you will need to inspect the contents of the
+    \texttt{varfun} listed in column M. All varfuns are available in a
+    sourceable file on Github. There is also a pdf of the
+    \href{https://github.com/FredHasselman/ManyLabRs/blob/master/ManyLabRs.pdf}{manual
+    pages}
+  \end{itemize}
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{require}\NormalTok{(devtools)}
+\KeywordTok{source_url}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/FredHasselman/ManyLabRs/master/manylabRs/R/ML2_variable_functions.R"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Does the output correspond to what may be expected by the \texttt{R}
+  code in column O?
+
+  \begin{itemize}
+  \itemsep1pt\parskip0pt\parsep0pt
+  \item
+    Think about the test-statistic, the parameters (df) and N.
+  \item
+    The results files can be found in the dropbox associated with a
+    \href{https://osf.io/fprzu/}{private project on OSF}:
+    \texttt{/TestOutput/}
+
+    \begin{itemize}
+    \itemsep1pt\parskip0pt\parsep0pt
+    \item
+      \texttt{RAW.DATA.PRIVATE} - Contains the output of the data
+      merging and filtering rules described in
+      \href{http://fredhasselman.com/htmlHost/ManyLabs/ML2_data_cleaning.html}{\texttt{ML2\_data\_cleaning.html}}
+    \end{itemize}
+  \end{itemize}
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\section{Appendix}\label{appendix}
+
+The analysis \texttt{cor.test.fisherZ()} defined as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cor.test.fisherZ <-}\StringTok{ }\NormalTok{function(}\DataTypeTok{r1=}\OtherTok{NULL}\NormalTok{,}\DataTypeTok{r2=}\OtherTok{NULL}\NormalTok{,}\DataTypeTok{n1=}\OtherTok{NULL}\NormalTok{,}\DataTypeTok{n2=}\OtherTok{NULL}\NormalTok{,}\DataTypeTok{p=}\OtherTok{TRUE}\NormalTok{)\{}
+    \NormalTok{if((}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(r1))[}\DecValTok{2}\NormalTok{]==}\DecValTok{2}\NormalTok{)&(}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(r2))[}\DecValTok{2}\NormalTok{]==}\DecValTok{2}\NormalTok{))\{}
+        \NormalTok{r1 <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(r1[,}\DecValTok{1}\NormalTok{],r1[,}\DecValTok{2}\NormalTok{],}\DataTypeTok{use=}\StringTok{"pairwise.complete.obs"}\NormalTok{)}
+        \NormalTok{r2 <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(r2[,}\DecValTok{1}\NormalTok{],r2[,}\DecValTok{2}\NormalTok{],}\DataTypeTok{use=}\StringTok{"pairwise.complete.obs"}\NormalTok{)}
+    \NormalTok{\} else\{}
+        \NormalTok{if(}\KeywordTok{all}\NormalTok{((}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(r1))!=}\DecValTok{1}\NormalTok{))&}\KeywordTok{all}\NormalTok{(}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.matrix}\NormalTok{(r2))!=}\DecValTok{1}\NormalTok{))\{}
+            \KeywordTok{disp}\NormalTok{(}\DataTypeTok{message =} \StringTok{"r1 and r2 each need to be:"}\NormalTok{, }\DataTypeTok{header =} \StringTok{"cor.test.fisherZ"}\NormalTok{, }\DataTypeTok{footer =} \OtherTok{FALSE}\NormalTok{)}
+            \KeywordTok{disp}\NormalTok{(}\DataTypeTok{message =} \StringTok{"- Either a single numerical value representing a correlation,"}\NormalTok{, }\DataTypeTok{header =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{footer =} \OtherTok{FALSE}\NormalTok{)}
+            \KeywordTok{disp}\NormalTok{(}\DataTypeTok{message =} \StringTok{"- Or a 2 column matrix from which a correlation r1 and r2 can be calculated"}\NormalTok{, }\DataTypeTok{header =} \OtherTok{FALSE}\NormalTok{)}
+        \NormalTok{\}}
+    \NormalTok{\}}
+    \NormalTok{z <-}\StringTok{ }\NormalTok{((}\KeywordTok{atanh}\NormalTok{(r1)-}\KeywordTok{atanh}\NormalTok{(r2))/((}\DecValTok{1}\NormalTok{/(n1}\DecValTok{-3}\NormalTok{))+(}\DecValTok{1}\NormalTok{/(n2}\DecValTok{-3}\NormalTok{)))^}\FloatTok{0.5}\NormalTok{)}
+    \NormalTok{if(p)\{p<-}\DecValTok{2}\NormalTok{*(}\DecValTok{1}\NormalTok{-}\KeywordTok{pnorm}\NormalTok{(}\KeywordTok{abs}\NormalTok{(z)))\} else \{p=}\OtherTok{NULL}\NormalTok{\}}
+    \NormalTok{stat.test <-}\StringTok{ }\KeywordTok{structure}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{statistic =} \NormalTok{z,}
+                                \DataTypeTok{method=}\StringTok{"Fisher r-to-Z transformed test for 2 independent correlations"}\NormalTok{,}
+                                \DataTypeTok{parameter=}\NormalTok{n1+n2,}
+                                \DataTypeTok{p=}\NormalTok{p)}
+    \NormalTok{)}
+    \KeywordTok{class}\NormalTok{(stat.test) <-}\StringTok{ "htest"}
+    \KeywordTok{return}\NormalTok{(stat.test)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+The function \texttt{any2r()} is defined as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#' any2r}
+\CommentTok{#'}
+\CommentTok{#' Converts most common test statistics into (signed) effect size \textbackslash{}code\{r\}.}
+\CommentTok{#'}
+\CommentTok{#' @param s     Value(s) of a test statistic.}
+\CommentTok{#' @param df1     Degrees of freedom}
+\CommentTok{#' @param df2     NULL or degrees of freedom of the denominator for the f-distribution.}
+\CommentTok{#' @param N     Number of data points used in calculation of test-statistic.}
+\CommentTok{#' @param esType     Type of test statistic. One of: "t", "lm.t", "f", "lm.f", "r", "X2", "Z", "lm.Z"}
+\CommentTok{#' @param CIcalc     If \textbackslash{}code\{TRUE\} (default) the Confidence Interval for the test statistic in \textbackslash{}code\{x\} will be calculated using the "Confidence limits for noncentral parameters" functions in package (e.g., for type - "t": \textbackslash{}link[MBESS]\{conf.limits.nct\}).}
+\CommentTok{#' @param CL    Confidence Limit (default: .95).}
+\CommentTok{#' @param keepSign     Return effect size with sign of test statistic? (default = TRUE).}
+\CommentTok{#'}
+\CommentTok{#' @details The prefix "lm" is currently disregarded, but will be implemented in future versions to indicate the test statistic is in fact a fixed factor in a linear model.}
+\CommentTok{#'}
+\CommentTok{#' @author}
+\CommentTok{#' CHJ Hartgerink (original code)}
+\CommentTok{#' F Hasselman (added vector input and CI calculation )}
+\CommentTok{#'}
+\CommentTok{#' @return The effect size \textbackslash{}code\{r\} corresponding to the test statistic(s).}
+\CommentTok{#' @export}
+\CommentTok{#'}
+\CommentTok{#' @examples}
+\NormalTok{any2r <-}\StringTok{ }\NormalTok{function(st, }\DataTypeTok{df1 =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{df2 =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{N =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{esType =} \OtherTok{NA}\NormalTok{, }\DataTypeTok{CIcalc =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{CL =} \NormalTok{.}\DecValTok{95}\NormalTok{, }\DataTypeTok{keepSign =} \OtherTok{TRUE}\NormalTok{)\{}
+    \KeywordTok{require}\NormalTok{(MBESS)}
+    \NormalTok{esType <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"lm."}\NormalTok{,}\StringTok{""}\NormalTok{,esType)}
+    \NormalTok{if(CIcalc)\{}
+        \NormalTok{sCI <-}\StringTok{ }\KeywordTok{get.ncpCI}\NormalTok{(st, df1, df2, N, esType, CL)}
+    \NormalTok{\} else \{}
+        \NormalTok{sCI <-}\StringTok{ }\NormalTok{st}
+    \NormalTok{\}}
+
+    \NormalTok{esComp <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+    \NormalTok{cnt <-}\StringTok{ }\DecValTok{0}
+
+    \NormalTok{for(cnt in }\KeywordTok{seq_along}\NormalTok{(sCI))\{}
+
+        \NormalTok{x <-}\StringTok{ }\NormalTok{sCI[cnt]}
+
+        \NormalTok{esComp[[cnt]] <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{grepl}\NormalTok{(}\StringTok{"t"}\NormalTok{,esType), }\KeywordTok{sqrt}\NormalTok{((x^}\DecValTok{2}\NormalTok{*(}\DecValTok{1} \NormalTok{/}\StringTok{ }\NormalTok{df1)) /}\StringTok{ }\NormalTok{(((x^}\DecValTok{2}\NormalTok{*}\DecValTok{1}\NormalTok{) /}\StringTok{ }\NormalTok{df1) +}\StringTok{ }\DecValTok{1}\NormalTok{)),}
+                                \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{grepl}\NormalTok{(}\StringTok{"f"}\NormalTok{,esType), }\KeywordTok{sqrt}\NormalTok{((x*(df2 /}\StringTok{ }\NormalTok{df1)) /}\StringTok{ }\NormalTok{(((x*df2) /}\StringTok{ }\NormalTok{df1) +}\StringTok{ }\DecValTok{1}\NormalTok{))*}\KeywordTok{sqrt}\NormalTok{(}\DecValTok{1}\NormalTok{/df2),}
+                                       \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{grepl}\NormalTok{(}\StringTok{"r"}\NormalTok{,esType), x,}
+                                              \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{grepl}\NormalTok{(}\StringTok{"X2"}\NormalTok{,esType), }\KeywordTok{sqrt}\NormalTok{(x/N),}
+                                                     \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{grepl}\NormalTok{(}\StringTok{"Z"}\NormalTok{,esType), }\KeywordTok{tanh}\NormalTok{(x *}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{1}\NormalTok{/(N}\DecValTok{-3}\NormalTok{))),}
+                                                            \OtherTok{NA}\NormalTok{)}
+                                              \NormalTok{)}
+                                       \NormalTok{)}
+                                \NormalTok{)}
+        \NormalTok{)}
+    \NormalTok{\}}
+
+    \NormalTok{ES <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(sCI,}\KeywordTok{rbind}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(esComp)))}
+    \KeywordTok{colnames}\NormalTok{(ES) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"ncp"}\NormalTok{,}\StringTok{"ncp.lo"}\NormalTok{,}\StringTok{"ncp.hi"}\NormalTok{)[}\DecValTok{1}\NormalTok{:cnt],}\KeywordTok{c}\NormalTok{(}\StringTok{"r"}\NormalTok{,}\StringTok{"r.ciL"}\NormalTok{,}\StringTok{"r.ciU"}\NormalTok{)[}\DecValTok{1}\NormalTok{:cnt])}
+    \NormalTok{if(keepSign)\{}
+        \NormalTok{ES <-}\StringTok{ }\NormalTok{ES *}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)[}\DecValTok{1}\NormalTok{:cnt], }\KeywordTok{sign}\NormalTok{(sCI)[}\DecValTok{1}\NormalTok{:cnt])}
+    \NormalTok{\}}
+    \KeywordTok{return}\NormalTok{(ES)}
+\NormalTok{\}}
+
+
+\NormalTok{get.ncpCI <-}\StringTok{ }\NormalTok{function(x, df1, df2, N, esType, }\DataTypeTok{CL=}\NormalTok{.}\DecValTok{95}\NormalTok{)\{}
+    \KeywordTok{require}\NormalTok{(MBESS)}
+    \NormalTok{esType <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"lm."}\NormalTok{,}\StringTok{""}\NormalTok{,esType)}
+    \NormalTok{ncCI <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+    \NormalTok{switch(esType,}
+           \DataTypeTok{t =} \NormalTok{ncCI <-}\StringTok{ }\NormalTok{MBESS::}\KeywordTok{conf.limits.nct}\NormalTok{(}\DataTypeTok{t.value=}\NormalTok{x, }\DataTypeTok{conf.level=}\NormalTok{CL, }\DataTypeTok{df=}\NormalTok{df1),}
+           \DataTypeTok{f =} \NormalTok{ncCI <-}\StringTok{ }\NormalTok{MBESS::}\KeywordTok{conf.limits.ncf}\NormalTok{(}\DataTypeTok{F.value=}\NormalTok{x, }\DataTypeTok{conf.level=}\NormalTok{CL, }\DataTypeTok{df.1=}\NormalTok{df1, }\DataTypeTok{df.2=}\NormalTok{df2),}
+           \DataTypeTok{r =} \NormalTok{ncCI <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{Lower.Limit =} \KeywordTok{ci.R}\NormalTok{(}\DataTypeTok{R=}\NormalTok{x, }\DataTypeTok{conf.level=}\NormalTok{CL, }\DataTypeTok{N=}\NormalTok{(df1}\DecValTok{+2}\NormalTok{), }\DataTypeTok{K=}\DecValTok{1}\NormalTok{)$Lower.Conf.Limit.R,}
+                            \DataTypeTok{Upper.Limit =} \KeywordTok{ci.R}\NormalTok{(}\DataTypeTok{R=}\NormalTok{x, }\DataTypeTok{conf.level=}\NormalTok{CL, }\DataTypeTok{N=}\NormalTok{(df1}\DecValTok{+2}\NormalTok{), }\DataTypeTok{K=}\DecValTok{1}\NormalTok{)$Upper.Conf.Limit.R),}
+           \DataTypeTok{X2 =} \NormalTok{ncCI <-}\StringTok{ }\NormalTok{MBESS::}\KeywordTok{conf.limits.nc.chisq}\NormalTok{(}\DataTypeTok{Chi.Square=}\NormalTok{x, }\DataTypeTok{df=}\NormalTok{df1,}
+                                                    \DataTypeTok{alpha.lower=}\DecValTok{0}\NormalTok{, }\DataTypeTok{alpha.upper=}\DecValTok{1}\NormalTok{-CL, }\DataTypeTok{conf.level=}\OtherTok{NULL}\NormalTok{),}
+           \DataTypeTok{Z =} \NormalTok{ncCI <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{Lower.Limit =} \NormalTok{(x -}\StringTok{ }\KeywordTok{qnorm}\NormalTok{((}\DecValTok{1}\NormalTok{-CL)/}\DecValTok{2}\NormalTok{, }\DataTypeTok{lower.tail =} \OtherTok{FALSE}\NormalTok{)),}
+                            \DataTypeTok{Upper.Limit =} \NormalTok{(x +}\StringTok{ }\KeywordTok{qnorm}\NormalTok{((}\DecValTok{1}\NormalTok{-CL)/}\DecValTok{2}\NormalTok{, }\DataTypeTok{lower.tail =} \OtherTok{FALSE}\NormalTok{)))}
+    \NormalTok{)}
+    \KeywordTok{return}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(}\DataTypeTok{ncp =} \NormalTok{x,}
+                 \DataTypeTok{ncp.lo =} \NormalTok{ncCI$Lower.Limit,}
+                 \DataTypeTok{ncp.hi =} \NormalTok{ncCI$Upper.Limit)}
+    \NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\end{document}

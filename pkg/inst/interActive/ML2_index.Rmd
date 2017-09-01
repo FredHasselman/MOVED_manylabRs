@@ -1,0 +1,91 @@
+---
+title: "ManyLabs2 Interactive Results"
+author: "-"
+date: "-"
+output: 
+  html_document: 
+    theme: spacelab
+    toc: yes
+    toc_float: FALSE
+---
+
+```{r set-options, echo=FALSE,include=FALSE,cache=FALSE}
+require(knitr)
+require(formatR)
+require(devtools)
+library(pander)
+library(plotly)
+srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manyLabRs/R/"
+source(paste0(srcDir,"C-3PR_ASCII.R"))
+source(paste0(srcDir,'getData.R'))
+source(paste0(srcDir,'inIT.R'))
+source(paste0(srcDir,'ML2_variable_functions.R'))
+source(paste0(srcDir,'fRedsRutils.R'))
+
+knitr::opts_chunk$set(cache=FALSE,prompt=FALSE,comment=NA,message=FALSE,echo=FALSE,warning=FALSE,tidy=FALSE,strip.white=FALSE,size="small", dpi = 150)
+
+outlist1 <- readRDS("sparklist1.rds")
+outlist2 <- readRDS("sparklist2.rds")
+
+outlist1$analysis_url <- paste0(paste("ML2",outlist1$.id,sep='_'),".html")
+id <- complete.cases(outlist1$test.p.value,outlist1$ESCI.r, outlist1$ESCI.N.total)
+outlist1 <- outlist1[id,]
+
+outlist2$analysis_url <- paste0(paste("ML2",outlist2$.id,sep='_'),".html")
+id <- complete.cases(outlist2$test.p.value,outlist2$ESCI.r)
+outlist2 <- outlist2[id,]
+```
+
+# r vs. p-value
+
+**Hover over a data point!**
+
+## Primary Analyses
+
+```{r, echo=FALSE,cache=FALSE}
+p <- plot_ly(data=outlist1, 
+             x = ~ESCI.r, 
+             y = ~test.p.value, 
+             size = ~ESCI.N.total, type = "scatter",
+             mode = "markers", 
+             hoverinfo = "text", 
+             text = paste("<b>r</b> =",outlist1$ESCI.r,", <b>p</b> <",outlist1$test.p.value,"<br>","<i>Analysis:</i>", outlist1$.id,"<br>", "<i>Sample:</i>", outlist1$study.source), name = "ML2 Primary") %>%  
+    #<a href='",outlist1$analysis_url,"'>", outlist1$.id,"</a><br>"
+    add_trace(x=c(-1,1), y=c(.05,.05), mode = "lines", 
+              inherit=FALSE, line = list(color="green"), name="p<.05")          %>%
+    add_trace(x=c(-1,1), y=c(.000001, .000001), mode = "lines", 
+              inherit=FALSE, line = list(color="orange"), name="p<.000001")     %>%
+    add_trace(x=c(-1,1), y=c(.000000000001, .000000000001), mode = "lines", 
+              inherit=FALSE, line = list(color="red"), name="p<.000000000001") %>%
+    layout(yaxis = list(title = "p-value"), xaxis = list(title = "Effect Size r"))
+
+l <- plotly_build(p)
+l$data[[1]]$text <- gsub("<br>ESCI.N.total (size):"," - <b>N</b> = ",l$data[[1]]$text,fixed=TRUE)
+l
+
+outlist1$analysis_url
+```
+
+<!-- ## Secondary Analyses  -->
+
+<!-- ```{r, echo=FALSE,cache=FALSE} -->
+<!-- p<- plot_ly(outlist2,  -->
+<!--         x = ESCI.r,  -->
+<!--         y = test.p.value,  -->
+<!--         mode = "markers",  -->
+<!--         size = ESCI.N.total, -->
+<!--         hoverinfo = "text", -->
+<!--         text = paste("<b>r</b> =",ESCI.r, -->
+<!--                      ", <b>p</b> <",test.p.value,"<br>", -->
+<!--                      "<i>Analysis:</i><a href=",analysis_url,">",.id,"</a><br>", -->
+<!--                      "<i>Sample:</i>", study.source), -->
+<!--         name="ML2 Secondary") %>% -->
+<!--   add_trace(x=seq(-1,1),y=rep(0.05,3),  line = list(color="green"), name="p<.05") %>% -->
+<!--   add_trace(x=seq(-1,1),y=rep(0.000001,3), line = list(color="orange"), name="p<.000001") %>% -->
+<!--   add_trace(x=seq(-1,1),y=rep(0.000000000001,3), line = list(color="red"), name="p<.000000000001") %>% -->
+<!--   layout(yaxis = list(title = "p-value"), -->
+<!--          xaxis = list(title = "Effect Size r")) -->
+<!-- l<-plotly_build(p) -->
+<!-- l$data[[1]]$text <- gsub("<br>ESCI.N.total (size):"," - <b>N</b> = ",l$data[[1]]$text,fixed=T) -->
+<!-- l -->
+<!-- ```   -->

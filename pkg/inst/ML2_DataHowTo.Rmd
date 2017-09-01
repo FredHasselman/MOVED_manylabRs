@@ -1,0 +1,90 @@
+---
+title: "ManyLabs2 - Data HowTo"
+author: "(Corresponding coder: [Fred Hasselman](http://fredhasselman.com))"
+date: "6 februari 2015"
+output:
+  html_document:
+    highlight: pygments
+    theme: cosmo
+    toc: yes
+  pdf_document: default
+  word_document: default
+---
+```{r set-options, echo=FALSE,include=FALSE}
+require(knitr)
+require(formatR)
+options(width=80)
+knitr::opts_chunk$set(cache=TRUE,comment="",message=FALSE,echo=TRUE,warning=FALSE,tidy=TRUE,strip.white=TRUE,size="small")
+```
+[ManyLabs2](https://osf.io/8cd4r) Data Merge
+==================================================
+
+Before we can do anything, you'll need to install some things:
+```{r funlib,echo=FALSE}
+require(devtools)
+source_url(url = 'https://raw.githubusercontent.com/FredHasselman/manylabRs/master/R/ML2_variable_functions.R')
+```
+
+Function `inIT` will load and -if necessary- install packages passed in a list (`unIT` will do the reverse operation).
+Let's initialise some libraries.
+```{r libs,eval=FALSE}
+inIT(c("plyr","dplyr","MBESS","metafor","xlsx","hypergeo"))
+```
+
+Set the working directory to where the `.csv` files are.
+If your dropbox is in your home folder and you copied the `Manylabs2/Raw Data/` folder to your Dropbox, the line below should work.
+We'll put the filenames ending in `.csv` in a list object `fileList` (using `grepl` to get a True / False index for the file-extension)
+```{r data0,eval=FALSE}
+setwd("~/Dropbox/Manylabs2/Raw Data/")
+fileList <- dir()[grepl(".csv",dir())]
+```
+
+Slate 1
+```{r data1,eval=FALSE}
+# Merge Slate 1
+skip<-list()
+ML2.files.S1 <- fileList[grepl("Slate1",fileList)&!(fileList%in%skip)]
+names(ML2.files.S1) <- ML2.files.S1
+ML2.S1 <- ldply(.data=ML2.files.S1, .fun=get.CSVdata, .inform=T)
+# Filter test trials
+ML2.S1 <- filter(ML2.S1,!(grepl("test",ML2.S1$age,ignore.case = T)))
+```
+
+Slate 2
+```{r data2,eval=FALSE}
+# Merge Slate 2
+skip<-list()
+ML2.files.S2 <- fileList[grepl("Slate2",fileList)&!(fileList%in%skip)]
+names(ML2.files.S2) <- ML2.files.S2
+ML2.S2 <- ldply(.data=ML2.files.S2, .fun=get.CSVdata, .inform=T)
+# Filter test trials
+ML2.S2 <- filter(ML2.S2,!(grepl("(test)+",ML2.S2$age,ignore.case = T, perl=T)))
+```
+
+
+Save data as `xlsx`, `csv` and `Rds`
+```{r data3,eval=FALSE}
+# SAVE DATA ---------------------------------------------------------------
+
+# Generate some stats about the datafiles and save to a workbook
+setwd("~/Dropbox/Manylabs2/Raw Data")
+ML2.vars.S1 <- llply(.data=ML2.files.S1, get.CSVinfo)
+ML2.vars.S2 <- llply(.data=ML2.files.S2, get.CSVinfo)
+
+setwd("~/Dropbox/Manylabs2/")
+wb    <- createWorkbook()
+sheet <- createSheet(wb,sheetName="N per site Slate 1")
+addDataFrame(ldply(ML2.vars.S1,function(inf) inf$Info), sheet)
+sheet <- createSheet(wb,sheetName="N per site Slate 2")
+addDataFrame(ldply(ML2.vars.S2,function(inf) inf$Info), sheet)
+saveWorkbook(wb, "ML2_DataFileInfo.xlsx") 
+
+# Raw Data Slate 1 .xlsx, .csv, RDS
+write.csv(ML2.S1,"ML2_RawData_S1.csv")
+saveRDS(ML2.S1,"ML2_RawData_S1.rds")
+
+# Raw Data Slate 2 .xlsx, .csv, RDS
+write.csv(ML2.S2,"ML2_RawData_S2.csv")
+saveRDS(ML2.S2,"ML2_RawData_S2.rds")
+```
+

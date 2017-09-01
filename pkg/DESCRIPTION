@@ -1,0 +1,19 @@
+Package: ManyLabRs
+Type: Package
+Title: Analysis scripts and data from the Manylabs projects
+Version: 0.1
+Date: 2015-12-11
+Authors@R: c(person("Fred", "Hasselman", email = "me@fredhasselman.com", role = c("aut", "cre", "pdr")),
+            person("Rick", "Klein", email = "", role = c("ctb", "pdr")),
+            person("Michelangelo", "Vianello", email = "", role = c("ctb", "pdr")),
+            person("Brian", "Nosek", email = "", role = c("ctb", "pdr")))
+Maintainer: Fred Hasselman <me@fredhasselman.com>
+Description: Code and data from the ManyLabs projects. ML1: Investigating Variation in Replicability (https://osf.io/wx7ck/); ML2: Investigating Variation in Replicability Across Sample and Setting (https://osf.io/8cd4r/).
+License: GPL-3
+LazyData: TRUE
+Depends: R (>= 2.10)
+Imports:  reshape2, plyr, rio, RCurl, httr, grid, devtools, downloader
+Suggests: lme4, lmerTest, MBESS, metafor, compute.es, scales, gridExtra, bitops, broom, knitr, rmarkdown
+Depends: dplyr, ggplot2
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr

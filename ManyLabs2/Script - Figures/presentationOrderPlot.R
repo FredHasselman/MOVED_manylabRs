@@ -1,0 +1,226 @@
+# PRESENTATION ORDER PLOT - MANYLABS 2 -
+# corresponding coder: (Fred Hasselman)[https://osf.io/ujgs6/]
+
+# SETUP -----------------------------------------------------------------------------------------------------------
+
+source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/R/C-3PR_ASCII.R')
+init()
+library(scales)
+
+
+# LOAD DATA -------------------------------------------------------------------------------------------------------
+
+dir.out <- "~/Dropbox/Manylabs2/Figures/"
+dir.in  <- "~/Dropbox/Manylabs2/TestOutput/RESULTS.RDS/"
+
+ML2.key <- get.GoogleSheet(data='ML2masteRkey')$df
+ML2.key <- ML2.key[ML2.key$study.name!="",]
+studies <- ML2.key$unique.id[ML2.key$study.figure2.include==1]
+
+
+dfout1     <-readRDS(paste0(dir.in,"Data_Figure_StudyOrder_all.rds"))
+outlist1   <- rio::import(paste0(dir.in,"Data_Figure_all.rds"))
+outlist1$study.labels <- ""
+
+
+## RUN THIS TO ANALYSE THE DATA AGGREGATED ON PRESENTATION ORDER
+
+# tp=4
+# startLog <- function(){
+#   con <- file("~/Dropbox/Manylabs2/TestOutput/RESULTS.LOG/ML2log_ES_by_order.txt")
+#   # Set the sink to 'con'
+#   sink(con, append=TRUE)
+#   sink(con, append=TRUE, type="message")
+#   return(con)
+# }
+#
+# restore <- function(con){
+#   # Restore output to console
+#   sink()
+#   sink(type="message")
+#
+#   close(con)
+#   closeAllConnections()
+# }
+#
+# con <- startLog()
+# saveRDSfile  <- TRUE
+# saveCSVfile  <- TRUE
+# # This will echo all input and not truncate 150+ character lines...
+# tryCatch(testScript(studies,tp,subset = "all",saveCSVfile,saveRDSfile),finally = restore(con))
+
+
+
+# CREATE DATASET TO PLOT ------------------------------------------------------------------------------------------
+
+for(s in unique(ML2.key$study.id)){
+  outlist1$study.labels[outlist1$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
+}
+outlist1$labels <- factor(as.character(outlist1$analysis.name))
+outlist1 <- outlist1 %>% group_by(labels) %>% mutate(meanES   = mean(ESCI.r, na.rm=TRUE),
+                                                     sdES     = sd(ESCI.r, na.rm=TRUE),
+                                                     medianES = median(ESCI.r, na.rm=TRUE),
+                                                     madES    = mad(ESCI.r, na.rm=TRUE),
+                                                     meanES_d = mean(ESCI.d, na.rm = TRUE),
+                                                     sdES_d   = sd(ESCI.d, na.rm=TRUE),
+                                                     medianES_d = median(ESCI.d, na.rm = TRUE),
+                                                     madES    = mad(ESCI.d, na.rm=TRUE)
+                                                     )
+
+
+df <- ldply(dfout1$aggregated)
+df <- df[!is.na(df$ESCI.r),]
+df$study.labels <- ""
+df$meanES <- df$sdES <- df$medianES <- df$madES <- df$meanES_d <- df$sdES_d <- df$medianES_d <- df$madES_d <- NA
+
+for(s in unique(ML2.key$study.id)){
+  df$study.labels[df$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
+  df$meanES[df$study.id%in%s]       <- outlist1$meanES[outlist1$study.id%in%s][1]
+  df$sdES[df$study.id%in%s]         <- outlist1$sdES[outlist1$study.id%in%s][1]
+  df$medianESS[df$study.id%in%s]    <- outlist1$medianES[outlist1$study.id%in%s][1]
+  df$madESS[df$study.id%in%s]        <- outlist1$madES[outlist1$study.id%in%s][1]
+  df$meanES_dS[df$study.id%in%s]    <- outlist1$meanES_d[outlist1$study.id%in%s][1]
+  df$sdES_dS[df$study.id%in%s]      <- outlist1$sdES_d[outlist1$study.id%in%s][1]
+  df$medianES_dS[df$study.id%in%s]    <- outlist1$medianES_d[outlist1$study.id%in%s][1]
+  df$madESS[df$study.id%in%s]         <- outlist1$madES[outlist1$study.id%in%s][1]
+}
+
+df <- dplyr::arrange(df, study.labels, study.source, meanES)
+table(df$study.labels)
+
+
+saveRDS(df,paste0(dir.in,"Data_Figure_StudyOrder.rds"))
+
+rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.xlsx"))
+rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.csv"))
+
+#df <- import(paste0(dir.in,"Data_Figure_StudyOrder.xlsx"))
+
+
+gap = .75
+
+df$loc.m <- df$meanES
+df$study.labels <- reorder(df$study.labels, df$loc.m, order=TRUE)
+studOrder       <- sort(attributes(df$study.labels)$scores)
+offsets         <- names(studOrder) %>% {setNames(seq(0,gap*(length(.) -1),by=gap), .)}
+all.equal(names(studOrder),names(offsets))
+
+#df <- df %>% mutate(offset_loc = offsets[.[['study.labels']]])
+df$offset_loc <- NA
+for(s in unique(df$study.labels)){
+  df$offset_loc[df$study.labels%in%s] <- offsets[names(offsets)%in%s]
+  }
+
+df$order <- ordered(df$study.source)
+
+#Colorblindsafe colors
+
+myCols <- brewer_pal(palette="RdYlBu")(11)
+
+cwhite = "#f7f7f7"
+ccream = "#2166ac"
+cblank = "#d1e5f0"
+corange = "#f4a582"
+cblue  = myCols[11]  #"#2166ac"
+cblueL = myCols[10]  #"#d1e5f0"
+cred   = myCols[1] #"#d6604d"
+credL  = myCols[2]  #"#f7f7f7"
+cpurp  = "#b2abd2"
+
+mypalette <- c(cblueL,credL)
+
+df$dens   <- NA
+df$dens.u <- NA
+df$dens.l <- NA
+df$loc.glob <- NA
+
+rr <- c(-gap,gap)
+
+for(s in unique(df$study.labels)){
+
+  M <- mean(df$ESCI.r[df$study.labels%in%s],na.rm=T) #%0!0%0  #mean(df$ESCI.r[df$study.labels%in%s], na.rm=T)
+  # R <- c(df$ESCI.l.r[df$study.labels%in%s&(df$study.source==1)],df$ESCI.u.r[df$study.labels%in%s&(df$study.source==1)])%0!0%c(0,0)
+
+  R.l <- min(df$ESCI.l.r[df$study.labels%in%s], na.rm = TRUE) #%0!0%-1
+  R.u <- max(df$ESCI.u.r[df$study.labels%in%s], na.rm = TRUE) #%0!0%1
+
+  df$loc.glob[df$study.labels%in%s] <- attributes(df$study.labels)$scores[names(attributes(df$study.labels)$scores)%in%s]
+}
+
+
+ df$loc   <- as.numeric(df$loc.m)
+
+ df$loc.m <-  format(round(df$loc.m,2),nsmall=2)
+ df$loc.gm <-  format(round(df$loc.glob,2),nsmall=2)
+
+ df.s <- group_by(df,df$source.name)
+ df.st <- group_by(df,df$analysis.name)
+
+
+# MEAN
+
+ df$loc.r <- df$offset_loc  +  (df$ESCI.r - df$meanES)
+ df$loc.u <- df$loc.r + (df$ESCI.u.r - df$ESCI.r)
+ df$loc.l <- df$loc.r + (df$ESCI.l.r - df$ESCI.r)
+
+
+ dflab <- summarise(group_by(df,study.labels),
+                    y = unique(offset_loc),
+                    lab = unique(loc.m))
+df$inCI <-laply(seq_along(df$loc.glob), function(r) between(df$loc.glob[r],df$ESCI.l.r[r],df$ESCI.u.r[r]))
+
+
+g2<-ggplot(df,aes(x= order, y = offset_loc, group = study.labels)) +
+  geom_hline(aes(yintercept = offset_loc), colour="grey70") +
+  geom_errorbar(aes(ymin=loc.l, ymax=loc.u),size=.3, width=.2) +
+  geom_point(aes(y = loc.r, fill = inCI, colour= inCI), size=.7, pch=21) +
+  geom_label(data=dflab,aes(x=16.5, y=y, label=lab), size=2.5) +
+  geom_text(x=16.5,y=max(df$offset_loc)+ gap,label="Mean r",parse = FALSE) +
+  scale_y_continuous("", breaks = unname(offsets), labels = names(offsets)) +
+  scale_x_discrete("Presentation Order", breaks=1:15, labels=paste(1:15), limits= c(1:17)) +
+  scale_colour_manual('Mean Order r in 95%CI of \n Presentation Order?', values = rev(mypalette)) +
+  scale_fill_manual('Mean Order r in 95%CI of \n Presentation Order?', values = rev(mypalette)) +
+  theme_bw()+
+  theme(panel.grid.major.y =element_blank(), #element_line(colour="grey80"),
+        panel.grid.minor.y =element_blank(),
+        panel.grid.major.x =element_blank(),
+        panel.grid.minor.x =element_blank())
+
+
+png(filename = paste0(outdir,"/ML2_OrderPlot_labels_bars_Mean_r_01-09-2017.png"),width=2400,height=2177, res=250)
+g2
+dev.off()
+
+
+
+# Use global
+
+df$loc.r <- df$offset_loc  +  (df$ESCI.r - df$loc.glob)
+df$loc.u <- df$loc.r + (df$ESCI.u.r - df$ESCI.r)
+df$loc.l <- df$loc.r + (df$ESCI.l.r - df$ESCI.r)
+
+dflab <- summarise(group_by(df,study.labels),
+                   y = unique(offset_loc),
+                   lab = unique(loc.gm))
+df$inCI <-laply(seq_along(df$loc.glob), function(r) between(df$loc.glob[r],df$ESCI.l.r[r],df$ESCI.u.r[r]))
+
+ g3<-ggplot(df,aes(x= order, y = offset_loc, group = study.labels)) +
+   geom_hline(aes(yintercept = offset_loc), colour="grey70") +
+   geom_errorbar(aes(ymin=loc.l, ymax=loc.u),size=.3, width=.2) +
+   geom_point(aes(y = loc.r, fill = inCI, colour= inCI), size=.7, pch=21) +
+   geom_label(data=dflab,aes(x=16.5, y=y, label=lab), size=2.5) +
+   geom_text(x=16.5,y=max(df$offset_loc)+ gap,label="Global r",parse = FALSE) +
+   scale_y_continuous("", breaks = unname(offsets), labels = names(offsets)) +
+   scale_x_discrete("Presentation Order", breaks=1:15, labels=paste(1:15), limits= c(1:17)) +
+   scale_colour_manual('Global r in 95%CI of \n Presentation Order?', values = rev(mypalette)) +
+   scale_fill_manual('Global r in 95%CI of \n Presentation Order?', values = rev(mypalette)) +
+   theme_bw()+
+   theme(panel.grid.major.y =element_blank(), #element_line(colour="grey80"),
+         panel.grid.minor.y =element_blank(),
+         panel.grid.major.x =element_blank(),
+         panel.grid.minor.x =element_blank())
+
+
+ png(filename = paste0(outdir,"/ML2_OrderPlot_labels_bars_Global_r_01-09-2017.png"),width=2400,height=2177, res=250)
+ g3
+ dev.off()

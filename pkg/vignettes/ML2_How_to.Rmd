@@ -1,0 +1,26 @@
+---
+title: "ManyLabs2 - How-to's"
+author: "[ManyLabs2 R Documentation](https://osf.io/8cd4r) (Corresponding coder: [Fred Hasselman](https://osf.io/ujgs6/))"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# ManyLabs2 How-To Documents:    
+
+* [Data-Merge-and-Clean-How-To](`r file.path(.libPaths(),"ManyLabRs","ML2_data_cleaning.html", fsep = .Platform$file.sep)`)
+* [Analysis-How-To](`r file.path(.libPaths(),"ManyLabRs","ML2_AnalysisHowTo.html", fsep = .Platform$file.sep)`)
+
+
+
+
+---------
+
+
+
+
+
+
