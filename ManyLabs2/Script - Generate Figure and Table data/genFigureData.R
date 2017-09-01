@@ -1,5 +1,5 @@
 # SPLIT VIOLIN PLOTS - MANYLABS 2 -
-# corresponding coder: (Fred Hasselman)[https://osf.io/ujgs6/]
+# corresponding coder: Fred Hasselman (https://osf.io/ujgs6/)
 
 srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manyLabRs/R/"
 source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/R/C-3PR_ASCII.R')
