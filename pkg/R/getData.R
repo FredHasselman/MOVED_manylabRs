@@ -235,7 +235,7 @@ get.analyses <- function(studies      = NA,
           if(describe$test$estype=="Z.f"){
 
             if(stat.test$method=="Fisher r-to-Z transformed test for difference between 2 independent correlations"){
-              ESCI[,7:last(ESCI)] <- NA
+              ESCI[,7:NCOL(ESCI)] <- NA
 
               Wilcox.out<- twopcor(x1=ML2.var[[g]]$r1[[1]],
                                    x2=ML2.var[[g]]$r1[[2]],
