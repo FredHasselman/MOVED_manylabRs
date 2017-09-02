@@ -287,7 +287,6 @@ get.analyses <- function(studies      = NA,
             sID <- SourceInfoTable$Source%in%runGroups[g]&SourceInfoTable$Filename%in%fID
             if(sum(sID)==1){
               SourceInfo1 <- SourceInfoTable[sID, ]
-
               SourceInfo2 <- raw.df[[g]] %>% filter(case.include) %>% group_by(source) %>%
                summarise(
                   N.sources.global    = length(unique(Source.Global)),
@@ -306,12 +305,13 @@ get.analyses <- function(studies      = NA,
                   N.IDiffOrderN     = length(unique(IDiffOrderN)),
                   N.uIDs            = length(unique(uID)),
                   N.studyorders2    = length(unique(study.order)),
-                  Tbl.analysistype  = paste0(capture.output(table(Pencil)),collapse="\n"),
+                  Tbl.analysistype  = paste0(capture.output(table(analysis.type)),collapse="\n"),
                   Tbl.subset        = paste0(capture.output(table(subset)),collapse="\n"),
                   N.cases.included  = sum(case.include, na.rm=TRUE),
                   N.cases.excluded  = sum(raw.df[[g]]$case.include==FALSE,na.rm=TRUE)
                   )
               SourceInfo<-cbind(SourceInfo1,SourceInfo2)
+
               }
             } else {
               # SourceInfo   <- t(ldply(1:NCOL(SourceInfoTable), function(c){
@@ -340,7 +340,7 @@ get.analyses <- function(studies      = NA,
                 N.IDiffOrderN     = length(unique(IDiffOrderN)),
                 N.uIDs            = length(unique(uID)),
                 N.studyorders2    = length(unique(study.order)),
-                Tbl.analysistype  = paste0(capture.output(table(Pencil)),collapse="\n"),
+                Tbl.analysistype  = paste0(capture.output(table(analysis.type)),collapse="\n"),
                 Tbl.subset        = paste0(capture.output(table(subset)),collapse="\n"),
                 N.cases.included  = n(),
                 N.cases.excluded  = sum(raw.df[[g]]$case.include==FALSE,na.rm=TRUE)
@@ -365,7 +365,7 @@ get.analyses <- function(studies      = NA,
                   N.IDiffOrderN     = length(unique(IDiffOrderN)),
                   N.uIDs            = length(unique(uID)),
                   N.studyorders2    = length(unique(study.order)),
-                  Tbl.analysistype  = paste0(capture.output(table(Pencil)),collapse="\n"),
+                  Tbl.analysistype  = paste0(capture.output(table(analysis.type)),collapse="\n"),
                   Tbl.subset        = paste0(capture.output(table(subset)),collapse="\n"),
                   N.cases.included  = n(),
                   N.cases.excluded  = sum(raw.df[[g]]$case.include==FALSE,na.rm=TRUE)
