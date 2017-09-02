@@ -3,28 +3,36 @@
 
 # SETUP -----------------------------------------------------------------------------------------------------------
 
-source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/R/C-3PR_ASCII.R')
+devtools::source_url('https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/C-3PR_ASCII.R')
 init()
-library(scales)
 
-
-# LOAD DATA -------------------------------------------------------------------------------------------------------
-
+# GENERATE DATA -------------------------------------------------------------------------------------------------------
 dir.out <- "~/Dropbox/Manylabs2/Figures/"
-dir.in  <- "~/Dropbox/Manylabs2/TestOutput/RESULTS.RDS/"
+dir.in <- "~/Dropbox/Manylabs2/TestOutput/RESULTS.RDS/"
 
-ML2.key <- get.GoogleSheet(data='ML2masteRkey')$df
-ML2.key <- ML2.key[ML2.key$study.name!="",]
-studies <- ML2.key$unique.id[ML2.key$study.figure2.include==1]
-
-
-dfout1     <-readRDS(paste0(dir.in,"Data_Figure_StudyOrder_all.rds"))
-outlist1   <- rio::import(paste0(dir.in,"Data_Figure_all.rds"))
-outlist1$study.labels <- ""
-
-
-## RUN THIS TO ANALYSE THE DATA AGGREGATED ON PRESENTATION ORDER
-
+## RUN THIS TO ANALYSE THE DATA AGGREGATED ON PRESENTATION ORDER [or load the pre-run datasets below]
+#
+# ML2.key <- get.GoogleSheet(data='ML2masteRkey')$df
+# ML2.key <- ML2.key[ML2.key$study.name!="",]
+# studies <- ML2.key$unique.id[ML2.key$study.figure2.include==1]
+#
+# # This is the file that contains the data used for the splitviolin plot
+# outlist   <- rio::import(paste0(dir.in,"Data_Figure.rds"))
+# outlist$study.labels <- ""
+#
+# for(s in unique(ML2.key$study.id)){
+#   outlist$study.labels[outlist$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
+# }
+# outlist$labels <- factor(as.character(outlist$analysis.name))
+# outlist <- outlist %>% group_by(labels) %>% mutate(meanES   = mean(ESCI.r, na.rm=TRUE),
+#                                                    sdES     = sd(ESCI.r, na.rm=TRUE),
+#                                                    medianES = median(ESCI.r, na.rm=TRUE),
+#                                                    madES    = mad(ESCI.r, na.rm=TRUE),
+#                                                    meanES_d = mean(ESCI.d, na.rm = TRUE),
+#                                                    sdES_d   = sd(ESCI.d, na.rm=TRUE),
+#                                                    medianES_d = median(ESCI.d, na.rm = TRUE),
+#                                                    madES    = mad(ESCI.d, na.rm=TRUE))
+#
 # tp=4
 # startLog <- function(){
 #   con <- file("~/Dropbox/Manylabs2/TestOutput/RESULTS.LOG/ML2log_ES_by_order.txt")
@@ -48,75 +56,89 @@ outlist1$study.labels <- ""
 # saveCSVfile  <- TRUE
 # # This will echo all input and not truncate 150+ character lines...
 # tryCatch(testScript(studies,tp,subset = "all",saveCSVfile,saveRDSfile),finally = restore(con))
+#
+#
+# # Get the ORDER AGGREGATED DATA
+#
+# # This file was saved by the code above and is a list object with analysis results for each order
+# dfout  <-readRDS(paste0(dir.in,"Data_Figure_StudyOrder_all.rds"))
+#
+# # Get the list into a data frame
+ df <- ldply(dfout$aggregated)
+
+ length(dfout$aggregated)
+ df <- df[!is.na(df$ESCI.r),]
+#
+# # Add some varaibles
+# df$study.labels <- ""
+# df$meanES <- df$sdES <- df$medianES <- df$madES <- df$meanES_d <- df$sdES_d <- df$medianES_d <- df$madES_d <- NA
+#
+# for(s in unique(ML2.key$study.id)){
+#   df$study.labels[df$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
+#   df$meanES[df$study.id%in%s]       <- outlist$meanES[outlist$study.id%in%s][1]
+#   df$sdES[df$study.id%in%s]         <- outlist$sdES[outlist$study.id%in%s][1]
+#   df$medianESS[df$study.id%in%s]    <- outlist$medianES[outlist$study.id%in%s][1]
+#   df$madESS[df$study.id%in%s]       <- outlist$madES[outlist$study.id%in%s][1]
+#   df$meanES_dS[df$study.id%in%s]    <- outlist$meanES_d[outlist$study.id%in%s][1]
+#   df$sdES_dS[df$study.id%in%s]      <- outlist$sdES_d[outlist$study.id%in%s][1]
+#   df$medianES_dS[df$study.id%in%s]  <- outlist$medianES_d[outlist$study.id%in%s][1]
+#   df$madESS[df$study.id%in%s]       <- outlist$madES[outlist$study.id%in%s][1]
+# }
+#
+# df <- dplyr::arrange(df, study.labels, study.source, meanES)
+#
+# # SAVE as Figure dataset
+# saveRDS(df,paste0(dir.in,"Data_Figure_StudyOrder.rds"))
+# rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.xlsx"))
+# rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.csv"))
 
 
-
-# CREATE DATASET TO PLOT ------------------------------------------------------------------------------------------
-
-for(s in unique(ML2.key$study.id)){
-  outlist1$study.labels[outlist1$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
-}
-outlist1$labels <- factor(as.character(outlist1$analysis.name))
-outlist1 <- outlist1 %>% group_by(labels) %>% mutate(meanES   = mean(ESCI.r, na.rm=TRUE),
-                                                     sdES     = sd(ESCI.r, na.rm=TRUE),
-                                                     medianES = median(ESCI.r, na.rm=TRUE),
-                                                     madES    = mad(ESCI.r, na.rm=TRUE),
-                                                     meanES_d = mean(ESCI.d, na.rm = TRUE),
-                                                     sdES_d   = sd(ESCI.d, na.rm=TRUE),
-                                                     medianES_d = median(ESCI.d, na.rm = TRUE),
-                                                     madES    = mad(ESCI.d, na.rm=TRUE)
-                                                     )
+# LOAD DATA instead of generating the data load the prepared datasets---------------------------------------------------
+df <- import(paste0(dir.in,"Data_Figure_StudyOrder.rds"))
 
 
-df <- ldply(dfout1$aggregated)
-df <- df[!is.na(df$ESCI.r),]
-df$study.labels <- ""
-df$meanES <- df$sdES <- df$medianES <- df$madES <- df$meanES_d <- df$sdES_d <- df$medianES_d <- df$madES_d <- NA
+# CREATE DATASET TO PLOT -----------------------------------------------------------------------------------------------
 
-for(s in unique(ML2.key$study.id)){
-  df$study.labels[df$study.id%in%s] <- unique(ML2.key$study.description[ML2.key$study.id%in%s])
-  df$meanES[df$study.id%in%s]       <- outlist1$meanES[outlist1$study.id%in%s][1]
-  df$sdES[df$study.id%in%s]         <- outlist1$sdES[outlist1$study.id%in%s][1]
-  df$medianESS[df$study.id%in%s]    <- outlist1$medianES[outlist1$study.id%in%s][1]
-  df$madESS[df$study.id%in%s]        <- outlist1$madES[outlist1$study.id%in%s][1]
-  df$meanES_dS[df$study.id%in%s]    <- outlist1$meanES_d[outlist1$study.id%in%s][1]
-  df$sdES_dS[df$study.id%in%s]      <- outlist1$sdES_d[outlist1$study.id%in%s][1]
-  df$medianES_dS[df$study.id%in%s]    <- outlist1$medianES_d[outlist1$study.id%in%s][1]
-  df$madESS[df$study.id%in%s]         <- outlist1$madES[outlist1$study.id%in%s][1]
-}
-
-df <- dplyr::arrange(df, study.labels, study.source, meanES)
-table(df$study.labels)
-
-
-saveRDS(df,paste0(dir.in,"Data_Figure_StudyOrder.rds"))
-
-rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.xlsx"))
-rio::export(df,paste0(dir.in,"Data_Figure_StudyOrder.csv"))
-
-#df <- import(paste0(dir.in,"Data_Figure_StudyOrder.xlsx"))
-
-
+# Gap between offsets
 gap = .75
 
 df$loc.m <- df$meanES
-df$study.labels <- reorder(df$study.labels, df$loc.m, order=TRUE)
+df$study.labels <- stats::reorder(df$study.labels, df$loc.m, order=TRUE)
 studOrder       <- sort(attributes(df$study.labels)$scores)
 offsets         <- names(studOrder) %>% {setNames(seq(0,gap*(length(.) -1),by=gap), .)}
 all.equal(names(studOrder),names(offsets))
 
-#df <- df %>% mutate(offset_loc = offsets[.[['study.labels']]])
+# OLD: df <- df %>% mutate(offset_loc = offsets[.[['study.labels']]])
 df$offset_loc <- NA
 for(s in unique(df$study.labels)){
   df$offset_loc[df$study.labels%in%s] <- offsets[names(offsets)%in%s]
   }
 
-df$order <- ordered(df$study.source)
+# Add Global effects of the regular analyses
+df$loc.glob <- NA
+for(s in unique(df$study.labels)){
+  df$loc.glob[df$study.labels%in%s] <- attributes(df$study.labels)$scores[names(attributes(df$study.labels)$scores)%in%s]
+}
 
-#Colorblindsafe colors
+ df$loc    <- as.numeric(df$loc.m)
+ df$loc.m  <- format(round(df$loc.m,2),nsmall=2)
+ df$loc.gm <- format(round(df$loc.glob,2),nsmall=2)
 
+
+# MEAN effect to display
+ df$loc.r <- df$offset_loc  +  (df$ESCI.r - df$meanES)
+ df$loc.u <- df$loc.r + (df$ESCI.u.r - df$ESCI.r)
+ df$loc.l <- df$loc.r + (df$ESCI.l.r - df$ESCI.r)
+
+ dflab <- summarise(group_by(df,study.labels),
+                    y = unique(offset_loc),
+                    lab = unique(loc.m))
+
+# 'is in CI' variable
+df$inCI <-laply(seq_along( ), function(r) between(df$loc.glob[r],df$ESCI.l.r[r],df$ESCI.u.r[r]))
+
+# Colorblindsafe colors
 myCols <- brewer_pal(palette="RdYlBu")(11)
-
 cwhite = "#f7f7f7"
 ccream = "#2166ac"
 cblank = "#d1e5f0"
@@ -128,47 +150,6 @@ credL  = myCols[2]  #"#f7f7f7"
 cpurp  = "#b2abd2"
 
 mypalette <- c(cblueL,credL)
-
-df$dens   <- NA
-df$dens.u <- NA
-df$dens.l <- NA
-df$loc.glob <- NA
-
-rr <- c(-gap,gap)
-
-for(s in unique(df$study.labels)){
-
-  M <- mean(df$ESCI.r[df$study.labels%in%s],na.rm=T) #%0!0%0  #mean(df$ESCI.r[df$study.labels%in%s], na.rm=T)
-  # R <- c(df$ESCI.l.r[df$study.labels%in%s&(df$study.source==1)],df$ESCI.u.r[df$study.labels%in%s&(df$study.source==1)])%0!0%c(0,0)
-
-  R.l <- min(df$ESCI.l.r[df$study.labels%in%s], na.rm = TRUE) #%0!0%-1
-  R.u <- max(df$ESCI.u.r[df$study.labels%in%s], na.rm = TRUE) #%0!0%1
-
-  df$loc.glob[df$study.labels%in%s] <- attributes(df$study.labels)$scores[names(attributes(df$study.labels)$scores)%in%s]
-}
-
-
- df$loc   <- as.numeric(df$loc.m)
-
- df$loc.m <-  format(round(df$loc.m,2),nsmall=2)
- df$loc.gm <-  format(round(df$loc.glob,2),nsmall=2)
-
- df.s <- group_by(df,df$source.name)
- df.st <- group_by(df,df$analysis.name)
-
-
-# MEAN
-
- df$loc.r <- df$offset_loc  +  (df$ESCI.r - df$meanES)
- df$loc.u <- df$loc.r + (df$ESCI.u.r - df$ESCI.r)
- df$loc.l <- df$loc.r + (df$ESCI.l.r - df$ESCI.r)
-
-
- dflab <- summarise(group_by(df,study.labels),
-                    y = unique(offset_loc),
-                    lab = unique(loc.m))
-df$inCI <-laply(seq_along(df$loc.glob), function(r) between(df$loc.glob[r],df$ESCI.l.r[r],df$ESCI.u.r[r]))
-
 
 g2<-ggplot(df,aes(x= order, y = offset_loc, group = study.labels)) +
   geom_hline(aes(yintercept = offset_loc), colour="grey70") +

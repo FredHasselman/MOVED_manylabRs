@@ -1,11 +1,12 @@
+# SPLIT VIOLIN PLOTS - MANYLABS 2 -
+# corresponding coder: Fred Hasselman (https://osf.io/ujgs6/)
+
+devtools::source_url('https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/C-3PR_ASCII.R')
+init()
+
+
 source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/R/C-3PR_ASCII.R')
 init()
-# library(plyr)
-# library(tidyverse)
-# library(rio)
-# library(xlsx)
- library(scales)
-# library(broom)
 
 srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manyLabRs/R/"
 Slabels <- c("non-WEIRD","WEIRD","Multi",".")
@@ -28,21 +29,8 @@ IDrem <- (oriEffects$study.figure2.include==1)&(oriEffects$ori.study.figure2.inc
 anaName    <- oriEffects$study.analysis[IDrem]
 oriEffects <- oriEffects[!IDrem,]
 
-#IDrem2<- (oriEffects$ori.sample.weird==10)&(oriEffects$ori.study.figure2.include==1)
-# IDmix <- oriEffects$study.name[(oriEffects$ori.sample.weird==10)]
-# IDana <- oriEffects$study.name%in%IDmix
-#
-# # oriEffects$study.analysis[IDrem|IDrem2]
-# # oriEffects$study.analysis[IDana]
-#
-# oriEffects$ori.WEIRD        <- oriEffects$ori.sample.weird
-# oriEffects$ori.WEIRD[IDana] <- 10
-# mixed <- as.list(tab[names(tab)%in%oriEffects$study.name[IDana&(IDrem|IDrem2)]])
-# anaName <- sort(oriEffects$study.analysis[IDana&(IDrem|IDrem2)])
-#
-# for(n in seq_along(mixed)){
-#   oriEffects$study.analysis[oriEffects$study.name%in%names(mixed[n])] <- rep(anaName[n],each=mixed[[n]])
-# }
+
+# WEIRDness of original effect sizes ------------------------------------------------------------------------------
 
 oriEffects$ori.WEIRD <- oriEffects$ori.sample.weird
 oriEffects$ori.WEIRD[oriEffects$ori.study.figure2.include==0] <- 99
