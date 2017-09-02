@@ -1879,7 +1879,7 @@ varfun.Gati.3 <- function(vars){
     df <- df[order(df$uID,df$itemID), ]
 
     # Item based dataset
-    df.stim <- summarize(group_by(df, itemID, interaction(Condition, CounterBalance)),
+    df.stim <- summarize(group_by(df, itemID, Condition), # interaction(Condition, CounterBalance)),
                          stimDV = mean(DV,na.rm = TRUE)
                         #  stimSD = sd(DV, na.rm = TRUE),
                         #  N = n()
