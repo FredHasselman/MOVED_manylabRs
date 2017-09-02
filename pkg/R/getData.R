@@ -72,8 +72,6 @@ get.analyses <- function(studies      = NA,
 
   # START STUDIES ----------------------------------
 
-
-
   for(s in studs){
 
     # Get the correct slate according to info in ML2.key['study.slate']
@@ -453,7 +451,6 @@ get.analyses <- function(studies      = NA,
       } # Double-check nMin
 
     } # iterate groups
-  } # if nrow >0
 
     disp(paste(s, ML2.key$study.analysis[[s]],"- COMPLETED"), header = FALSE)
 
@@ -465,7 +462,17 @@ get.analyses <- function(studies      = NA,
     }
 
     rm(ML2.in, ML2.var, ML2.id, ML2.df, ML2.sr, outputSource, dataSource, raw.df, clean.df, descr, SourceInfo, nMin1, nMin2, listIT)
+
+  } else { # if nrow > 0
+    disp(paste(s, ML2.key$study.analysis[[s]],"- SKIPPED"), header = FALSE)
+
+    ML2.output[[s]]  <- NULL
+    ML2.rawdata[[s]] <- NULL
+
+    rm(ML2.in, ML2.var, ML2.id, ML2.df, ML2.sr)
   }
+
+    } # for s i studies
 
   options(wop)
   return(list(raw.case   = ML2.rawdata,
