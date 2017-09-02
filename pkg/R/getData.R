@@ -84,13 +84,6 @@ get.analyses <- function(studies      = NA,
 
     # WEIRD <- ML2.df$Country%in%c("Australia","Austria","Canada","France","Germany","Hungary","Italy","New Zealand","Poland","Portugal","Serbia","Spain","Sweden", "The Netherlands","UK","USA")
     #
-     if(!subset%in%"all"){
-       if(subset%in%"WEIRD"){
-         ML2.df <- ML2.df[ML2.df$source.Weird==1,]
-       } else {
-         ML2.df <- ML2.df[ML2.df$source.Weird==0,]
-       }
-     }
 
     # Add a unique ID
     ML2.df$uID = seq(1, nrow(ML2.df))
@@ -98,6 +91,14 @@ get.analyses <- function(studies      = NA,
     # Get info to create a dataset for the current study
     # keytable <- ML2.key[s,]
     ML2.in <- get.info(ML2.key[s, ], colnames(ML2.df))
+
+    if(!subset%in%"all"){
+      if(subset%in%"WEIRD"){
+        ML2.df <- ML2.df[ML2.df$Weird==1,]
+      } else {
+        ML2.df <- ML2.df[ML2.df$Weird==0,]
+      }
+    }
 
     # Generate chain to select variables for the data frame and create a filter chain for the variables to use for analysis
     # Info based on KeyTable information in study.vars, cases.include, site.include, params.NA

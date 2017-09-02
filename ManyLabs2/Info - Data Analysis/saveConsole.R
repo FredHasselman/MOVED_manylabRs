@@ -5,7 +5,7 @@ init()
 
 # Set variables ---------------------------------------------------------------------------------------------------
 tp <- 1
-subset = "all"
+subset = "WEIRD"
 
 ML2.key <- ML2.key <- get.GoogleSheet(data='ML2masteRkey')$df
 ML2.key <- ML2.key[!is.na(ML2.key$unique.id),]

@@ -425,7 +425,7 @@ get.info <- function(keytable,cols){
   if(sites.include[[1]][1]=="all"){sites.include[[1]]<-'is.character(source)'}
 
   # Find correct columns in this dataset according to ML2.key: 'ML2.in$study.vars'
-  id.vars  <- which(cols%in%c(unlist(study.vars),'uID','.id','age','sex','source','Source.Global','Source.Primary','Source.Secondary','Country','Language','SubjectPool','Setting','Tablet','Pencil','Execution', 'StudyOrderN','IDiffOrderN'))
+  id.vars  <- which(cols%in%c(unlist(study.vars),'uID','.id','age','sex','source','Source.Global','Source.Primary','Source.Secondary','Country','Location','Language','Weird','SubjectPool','Setting','Tablet','Pencil','Execution', 'StudyOrderN','IDiffOrderN'))
   return(list(study.vars          = study.vars,
               study.vars.labels   = study.vars.labels,
               stat.params         = stat.params,
