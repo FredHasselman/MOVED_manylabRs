@@ -16,14 +16,14 @@ outlist.tmp <- outlist.tmp$aggregated
 outlist1 <-ldply(outlist.tmp)
 
 rm(outlist.tmp)
-outlist.tmp <- readRDS(paste0("ML2_results_secondary_all.rds"))
+outlist.tmp <- readRDS(paste0(dir.in,"ML2_results_secondary_all.rds"))
 outlist.tmp <- outlist.tmp$aggregated
 outlist2 <- ldply(outlist.tmp)
 
 outlistAll <- rbind(outlist1[,which(colnames(outlist1)%in%colnames(outlist2))],outlist2[,which(colnames(outlist2)%in%colnames(outlist1))])
 
 rm(outlist.tmp)
-outlist.tmp <- readRDS(paste0("ML2_results_global_all.rds"))
+outlist.tmp <- readRDS(paste0(dir.in,"ML2_results_global_all.rds"))
 outlist.tmp <- outlist.tmp$aggregated
 outlistG <- ldply(outlist.tmp)
 
@@ -103,14 +103,12 @@ outlistAll.aggr <- summarise(group_by(outlistAll,
                              N.large.d.50           = sum(ESCI.d >= 2, na.rm = TRUE),
                              N.samedir.q            = sum(ESCI.cohensQ > 0, na.rm = TRUE),
                              N.oppdir.q             = sum(ESCI.cohensQ < 0, na.rm = TRUE),
-                             N.eq0.q                = sum(ESCI.cohensQ. == 0, na.rm = TRUE),
+                             N.eq0.q                = sum(ESCI.cohensQ == 0, na.rm = TRUE),
                              N.none.q.00            = sum(ESCI.cohensQ <.10, na.rm = TRUE),
                              N.small.q.10           = sum(between(ESCI.cohensQ,.10,.30), na.rm = TRUE),
                              N.intermediate.q.30    = sum(between(ESCI.cohensQ,.30,.50), na.rm = TRUE),
                              N.large.q.50           = sum(ESCI.cohensQ >= .50, na.rm = TRUE)
 )
-
-
 
 outlistAll.aggr.WEIRD <- summarise(group_by(outlistAll,
                                             study.id,
@@ -159,7 +157,7 @@ outlistAll.aggr.WEIRD <- summarise(group_by(outlistAll,
                                    N.large.d.50           = sum(ESCI.d >= 2, na.rm = TRUE),
                                    N.samedir.q            = sum(ESCI.cohensQ > 0, na.rm = TRUE),
                                    N.oppdir.q             = sum(ESCI.cohensQ < 0, na.rm = TRUE),
-                                   N.eq0.q                = sum(ESCI.cohensQ. == 0, na.rm = TRUE),
+                                   N.eq0.q                = sum(ESCI.cohensQ == 0, na.rm = TRUE),
                                    N.none.q.00            = sum(ESCI.cohensQ <.10, na.rm = TRUE),
                                    N.small.q.10           = sum(between(ESCI.cohensQ,.10,.30), na.rm = TRUE),
                                    N.intermediate.q.30    = sum(between(ESCI.cohensQ,.30,.50), na.rm = TRUE),
@@ -213,7 +211,7 @@ outlistAll.aggr.USA <- summarise(group_by(outlistAll,
                                  N.large.d.50           = sum(ESCI.d >= 2, na.rm = TRUE),
                                  N.samedir.q            = sum(ESCI.cohensQ > 0, na.rm = TRUE),
                                  N.oppdir.q             = sum(ESCI.cohensQ < 0, na.rm = TRUE),
-                                 N.eq0.q                = sum(ESCI.cohensQ. == 0, na.rm = TRUE),
+                                 N.eq0.q                = sum(ESCI.cohensQ == 0, na.rm = TRUE),
                                  N.none.q.00            = sum(ESCI.cohensQ <.10, na.rm = TRUE),
                                  N.small.q.10           = sum(between(ESCI.cohensQ,.10,.30), na.rm = TRUE),
                                  N.intermediate.q.30    = sum(between(ESCI.cohensQ,.30,.50), na.rm = TRUE),
@@ -222,7 +220,6 @@ outlistAll.aggr.USA <- summarise(group_by(outlistAll,
 
 outlistFigure <- outlistAll[as.character(outlistAll$analysis.name)%in%oriEffects$study.analysis,]
 outlistTable  <- outlistAll[as.character(outlistAll$analysis.name)%in%oriEffectsT$study.analysis,]
-
 
 outlistTable.aggr.WEIRD <- summarise(group_by(outlistTable,
                                               study.id,
@@ -249,9 +246,9 @@ outlistTable.aggr.WEIRD <- summarise(group_by(outlistTable,
                                      ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                      ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                      ES.d.median = median(ESCI.d, na.rm = TRUE),
-                                     ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                                     ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                                     ES.q.median = median(ESCI.q, na.rm = TRUE),
+                                     ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                                     ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                                     ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                      ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                      ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                      ES.Global.q = paste0(unique(GlobalES.q), collapse = "|")
@@ -282,9 +279,9 @@ outlistTable.aggr.USA <- summarise(group_by(outlistTable,
                                    ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                    ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                    ES.d.median = median(ESCI.d, na.rm = TRUE),
-                                   ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                                   ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                                   ES.q.median = median(ESCI.q, na.rm = TRUE),
+                                   ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                                   ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                                   ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                    ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                    ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                    ES.Global.q = paste0(unique(GlobalES.q), collapse = "|")
@@ -315,9 +312,9 @@ outlistTable.aggr <- summarise(group_by(outlistTable,
                                ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                ES.d.median = median(ESCI.d, na.rm = TRUE),
-                               ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                               ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                               ES.q.median = median(ESCI.q, na.rm = TRUE),
+                               ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                               ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                               ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                ES.Global.q = paste0(unique(GlobalES.q), collapse = "|"))
@@ -348,9 +345,9 @@ outlistFigure.aggr <- summarise(group_by(outlistFigure,
                                       ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                       ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                       ES.d.median = median(ESCI.d, na.rm = TRUE),
-                                ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                                ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                                ES.q.median = median(ESCI.q, na.rm = TRUE),
+                                ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                                ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                                ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                 ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                 ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                 ES.Global.q = paste0(unique(GlobalES.q), collapse = "|")
@@ -382,9 +379,9 @@ outlistFigure.aggr.WEIRD <- summarise(group_by(outlistFigure,
                                      ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                      ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                      ES.d.median = median(ESCI.d, na.rm = TRUE),
-                                     ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                                     ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                                     ES.q.median = median(ESCI.q, na.rm = TRUE),
+                                     ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                                     ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                                     ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                      ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                      ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                      ES.Global.q = paste0(unique(GlobalES.q), collapse = "|"))
@@ -415,9 +412,9 @@ outlistFigure.aggr.USA <- summarise(group_by(outlistFigure,
                                    ES.d.mean = mean(ESCI.d, na.rm = TRUE),
                                    ES.d.sd   = sd(ESCI.d, na.rm = TRUE),
                                    ES.d.median = median(ESCI.d, na.rm = TRUE),
-                                   ES.q.mean = mean(ESCI.q, na.rm = TRUE),
-                                   ES.q.sd   = sd(ESCI.q, na.rm = TRUE),
-                                   ES.q.median = median(ESCI.q, na.rm = TRUE),
+                                   ES.q.mean = mean(ESCI.cohensQ, na.rm = TRUE),
+                                   ES.q.sd   = sd(ESCI.cohensQ, na.rm = TRUE),
+                                   ES.q.median = median(ESCI.cohensQ, na.rm = TRUE),
                                    ES.Global.r = paste0(unique(GlobalES.r), collapse = "|"),
                                    ES.Global.d = paste0(unique(GlobalES.d), collapse = "|"),
                                    ES.Global.q = paste0(unique(GlobalES.q), collapse = "|")

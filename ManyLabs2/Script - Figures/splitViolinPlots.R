@@ -1,19 +1,18 @@
-# SPLIT VIOLIN PLOTS - MANYLABS 2 -
-# corresponding coder: Fred Hasselman (https://osf.io/ujgs6/)
-
-devtools::source_url('https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/C-3PR_ASCII.R')
+source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/R/C-3PR_ASCII.R')
 init()
-
+# library(plyr)
+# library(tidyverse)
+# library(rio)
+# library(xlsx)
+ library(scales)
+# library(broom)
 
 srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manyLabRs/R/"
+Slabels <- c("non-WEIRD","WEIRD","Multi",".")
 
 ML2.key    <- get.GoogleSheet(data='ML2masteRkey')$df
 ML2.key    <- ML2.key[ML2.key$study.name!="",]
 dir.in     <- "~/Dropbox/Manylabs2/TestOutput/RESULTS.RDS/"
-dir.out    <- "~/Dropbox/Manylabs2/TestOutput/Figures"
-
-Slabels <- c("non-WEIRD","WEIRD","Multi",".")
-
 outlist1   <- rio::import(paste0(dir.in,"Data_Figure.rds"))
 outlist1$study.labels <- ""
 
@@ -29,14 +28,29 @@ IDrem <- (oriEffects$study.figure2.include==1)&(oriEffects$ori.study.figure2.inc
 anaName    <- oriEffects$study.analysis[IDrem]
 oriEffects <- oriEffects[!IDrem,]
 
+#IDrem2<- (oriEffects$ori.sample.weird==10)&(oriEffects$ori.study.figure2.include==1)
+# IDmix <- oriEffects$study.name[(oriEffects$ori.sample.weird==10)]
+# IDana <- oriEffects$study.name%in%IDmix
+#
+# # oriEffects$study.analysis[IDrem|IDrem2]
+# # oriEffects$study.analysis[IDana]
+#
+# oriEffects$ori.WEIRD        <- oriEffects$ori.sample.weird
+# oriEffects$ori.WEIRD[IDana] <- 10
+# mixed <- as.list(tab[names(tab)%in%oriEffects$study.name[IDana&(IDrem|IDrem2)]])
+# anaName <- sort(oriEffects$study.analysis[IDana&(IDrem|IDrem2)])
+#
+# for(n in seq_along(mixed)){
+#   oriEffects$study.analysis[oriEffects$study.name%in%names(mixed[n])] <- rep(anaName[n],each=mixed[[n]])
+# }
+
 oriEffects$ori.WEIRD <- oriEffects$ori.sample.weird
 oriEffects$ori.WEIRD[oriEffects$ori.study.figure2.include==0] <- 99
 oriEffects$ori.WEIRD.f <- factor(oriEffects$ori.WEIRD,
                                     levels = c(0,1,10,99),
-                                    labels = )
+                                    labels = Slabels)
 oriEffects$orig.ES.r[oriEffects$ori.WEIRD==99] <- 1
 oriEffects <- select(oriEffects, c(1:5,11:14,22:24,43:49))
-
 
 df <- outlist1
 df$labels <- factor(as.character(df$analysis.name))
@@ -52,9 +66,20 @@ studOrder <- attributes(df$study.labels)$scores
 offsets   <- names(studOrder) %>% {setNames(0:(length(.) - 1), .)}
 all.equal(names(studOrder),names(offsets))
 
+#df$meanES <- df$medianES
+
+# dfG <- summarise(group_by(df,study.labels),
+#                  y   = median(ESCI.r,na.rm  = T),
+#                  ymin= mean(ESCI.l.r, na.rm = T),
+#                  ymax= mean(ESCI.u.r, na.rm = T))
+#
+# dfG   <- arrange(dfG, y)
+#
+# dfAg <- aggregate(ESCI.r ~ study.labels, df, mean)
 
 okN <- df$stat.N>=30
 okCond <- (df$stat.n1>=15)|(df$stat.n1>=15)
+
 df <- df[okN|okCond, ]
 
 df$sigf     <- "p > .05"
@@ -66,16 +91,21 @@ df$sigf.f <- relevel(df$sigf.f, ref = "p > .05")
 df$USA <- "non-USA"
 df$USA[df$source.Country=="USA"] <- "USA"
 
+
 df$source.WEIRD.f <- factor(df$source.Weird,
                             levels = c(0,1),
                             labels = c("non-WEIRD","WEIRD"))
 df$splitv <- df$source.WEIRD.f
 
-# Get the group levels for the split variable
+#Get the group levels for the split variable
 splits <- unique(df[['splitv']])
 splits <- relevel(splits, ref = "WEIRD")
 
+
 # Calculate and scale group densities
+#
+# I'm rescaling the density curves so that they all have the same peak height and don't overlap. Edit the mutate() line if you want to have the density polygons be different sizes (e.g., scaled so that they show the relative amount of data in each group).
+
 tblF <- summarise(group_by(df, study.labels, splitv),
                   N = n())
 nnames   <- tblF$study.labels[tblF$N==1]
@@ -150,6 +180,7 @@ pdat <- arrange(pdat, study.labels,splitv,loc)
 pdat <- pdat %>%
   mutate(offset_dens = offsets[.[['study.labels']]] + ifelse(.[['splitv']] == splits[2], -dens, dens))
 
+
 means <- means %>%
   mutate(offset = offsets[.[['study.labels']]],
          offset_dens = offset + ifelse(.[['splitv']] == splits[2], -dens, dens),
@@ -174,11 +205,14 @@ for(n in seq_along(labs)){
    }
 }
 
+#means$offset_fix[means$oriWEIRD%in%"Mixed"] <- means$offset_fix[means$oriWEIRD%in%"Mixed"]+c(.225,-.225)
 
 sums = sums %>%
   mutate(offset      = offsets[.[['study.labels']]],
          offset_dens = offset + ifelse(.[['splitv']] == splits[2], -dens, dens),
          offset_fix  = offset + ifelse(.[['splitv']] == splits[2], -.2, .2))
+
+
 
 df$ESCI.N.bin <- cut(df$ESCI.N.total,c(0,80,200,900))
 sums$offset_densN <- NA
@@ -194,6 +228,8 @@ sums$relSize <- sums$offset + (ifelse(sums$splitv == splits[2],-1,1) * (ifelse(a
 
 # Colour blind safe
 myCols <- brewer_pal(palette="RdYlBu")(11)
+#myCols <- c("#d73027","#4575b4","#5aae61")
+
 
 #Colorblindsafe colors
 cwhite = "#f7f7f7"
@@ -208,6 +244,8 @@ cpurp  = "#b2abd2"
 
 mypalette <- c(credL,cblueL)
 
+outdir <- "/Users/Fred/Dropbox/Manylabs2/Figures"
+
 cols <- c("non-WEIRD" = credL, "WEIRD" = cblueL, "Mixed"="#5aae61")
 
 pdat$study.labels <- ordered(as.character(pdat$study.labels), levels = names(studOrder[order(studOrder)]))
@@ -215,8 +253,12 @@ pdat$study.labels <- ordered(as.character(pdat$study.labels), levels = names(stu
 means <- means %>%
   mutate( offset_fix  = offset + ifelse(.[['splitv']] == splits[2], -.2, .2))
 
+# means$oriWEIRD.n[means$oriWEIRD%in%"WEIRD"] <- 21
+# means$oriWEIRD.n[means$oriWEIRD%in%"non-WEIRD"] <- 22
+# means$oriWEIRD.n[means$oriWEIRD%in%"."] <- 25
 
 Sbreaks <- c(25,24,23,21)
+Slabels <- c("non-WEIRD","WEIRD","Mixed",".")
 OriShapes <- list()
 means$oriWEIRD.n <- NA
 for(s in seq_along(Sbreaks)){
@@ -227,9 +269,9 @@ means$oriWEIRD.n <- factor(means$oriWEIRD.n,Sbreaks,Sbreaks)
 names(OriShapes) <- paste(Sbreaks)
 OriShapes<-unlist(OriShapes)
 
-# pdat$splitv <- relevel(pdat$splitv,ref="non-WEIRD")
-# sums$splitv <- relevel(sums$splitv,ref="non-WEIRD")
-# means$splitv<- relevel(means$splitv,ref="non-WEIRD")
+pdat$splitv <- relevel(pdat$splitv,ref="non-WEIRD")
+sums$splitv <- relevel(sums$splitv,ref="non-WEIRD")
+means$splitv<- relevel(means$splitv,ref="non-WEIRD")
 
 pdat <- na.omit(pdat)
 
@@ -244,6 +286,9 @@ for(s in unique(pdat$study.labels)){
   IDmaxSV1 <- which.max(pdat$loc[IDs&pdat$splitv%in%levels(pdat$splitv)[1]])
   IDmaxSV2 <- which.max(pdat$loc[IDs&pdat$splitv%in%levels(pdat$splitv)[2]])
 
+  # IDmin <- which.min(c(pdat$loc[IDs][IDminSV1],pdat$loc[IDs][IDminSV2]))
+  # IDmax <- which.min(c(pdat$loc[IDs][IDmaxSV1],pdat$loc[IDs][IDmaxSV2]))
+
   pdat$loc[IDs][IDminSV1]         <- pdat$loc[IDs][IDminSV2]         <- locmn
   pdat$offset_dens[IDs][IDminSV1] <- pdat$offset_dens[IDs][IDminSV2] <- offsets[names(offsets)%in%s]
 
@@ -252,8 +297,9 @@ for(s in unique(pdat$study.labels)){
 
 }
 
+#OriShapes <- c("21"="WEIRD","22"="non-WEIRD","23"="Ori ≠ ML2")
 
-g1 <- ggplot(pdat, aes(offset_dens, loc, group = interaction(pdat[['study.labels']], pdat[['splitv']])), colour = splitv) +
+g2 <- ggplot(pdat, aes(offset_dens, loc, group = interaction(pdat[['study.labels']], pdat[['splitv']])), colour = splitv) +
   geom_hline(yintercept = 0, color = "grey70") +
   geom_path(size=1, alpha = .5, color = "grey70")+
   geom_path(aes(colour=splitv)) +
@@ -264,15 +310,13 @@ g1 <- ggplot(pdat, aes(offset_dens, loc, group = interaction(pdat[['study.labels
                               colour = splitv),
                inherit.aes=FALSE, alpha=.7, size= .2) +
   geom_segment(data=means, aes(x = offset, y = loc, xend = offset_dens, yend = loc, colour =  splitv), inherit.aes=FALSE, size=.8, alpha=.8) +
- # geom_point(data=means, aes(x = offset_fix, y = oriES, shape=oriWEIRD.n, fill=splitv), colour = "black", inherit.aes = FALSE, size=1.2, alpha=.8) +
+  geom_point(data=means, aes(x = offset_fix, y = oriES, shape=oriWEIRD.n, fill=splitv), colour = "black", inherit.aes = FALSE, size=1.2, alpha=.8) +
   scale_colour_manual('Effect Size', values = cols) +
   scale_x_continuous(name = '', breaks = unname(offsets), labels = names(offsets), limits = c(-0.5,27.5)) +
-  scale_shape_manual('', values=OriShapes, breaks = 24,labels = "Original") +
+  scale_fill_manual(,values = cols, guide=FALSE) +
+  scale_shape_manual(values=OriShapes, breaks = Sbreaks,labels = c("","Original","","")) +
   guides(colour = guide_legend(order = 1)) +
-  scale_fill_manual('',values = cols, guide=FALSE) + #breaks = "WEIRD", labels = "Original") +
-  #guides(colour = guide_legend(order = 2)) +
-  scale_shape_identity('Original ES', breaks = means$oriWEIRD.n, labels = means$oriWEIRD.f, guide = "legend") +
-  ylim(-1,1) +
+  ylim(-1,1)+
   ylab('Effect Size r') +  theme_minimal() +
   theme(legend.position = "top",
         legend.text = element_text(size=rel(.8)),
@@ -284,12 +328,82 @@ g1 <- ggplot(pdat, aes(offset_dens, loc, group = interaction(pdat[['study.labels
         panel.grid.major.x =element_blank(),
         panel.grid.minor.x =element_blank()) +
   coord_flip()
-
-g1
-
-png(filename = paste0(dir.out,"/ML2_SplitViolin_Mean_Ori_02-09-2017.png"),width=2400,height=2177, res=250)
-g1
-dev.off()
+g2
 
 
+png(filename = paste0(outdir,"/ML2_SplitViolin_Mean_Ori_01-09-2017.png"),width=2400,height=2177, res=250)
+g2
+ dev.off()
+g2
 
+# ggsave(filename = paste0(outdir,"/ML2_SplitViolin_Mean_Ori_triangles_020517_MinimalLEgend.pdf"),
+#        plot = g2,
+#        scale = 3,
+#        width = wd,
+#        height = hg,
+#        units = "cm"
+#        )
+#
+
+
+
+
+# #Plot
+# g2 <- ggplot(pdat, aes(offset_dens, loc, fill = splitv, group = interaction(pdat[['labels']], pdat[['splitv']]))) +
+#   geom_hline(yintercept = 0, colour = "ivory4") +
+#   geom_polygon() +
+#   # geom_segment(data=sums, aes(x = offset, y = loc,
+#   #                             xend = tsize, yend = loc), inherit.aes=FALSE, alpha=1, size=.2, colour = "white") +
+#   geom_segment(data=means, aes(x = offset, y = loc, xend = offset_dens, yend = loc, colour = splitv), inherit.aes=FALSE, size=.8, alpha=1) +
+#   geom_point(data=dfSumS, aes(x=labloc, y = ES, shape = EStype.f), inherit.aes=FALSE, alpha=1, size=5, colour = "#5aae61") +
+#   scale_x_continuous(name = '', breaks = unname(offsets), labels = names(offsets)) +
+#   scale_colour_manual('ES Distribution',values = c("#d1e5f0","#f4a582")) +
+#   scale_fill_manual('ES Distribution',values = c(cred,cblue)) +
+#   scale_shape_manual('',values = c(73,19,17)) +
+#   ylab('Effect Size r') +  theme_minimal() +
+#   theme(legend.position = "top",
+#         legend.background  =element_rect(),
+#         panel.grid.major.y =element_line(colour="grey80"),
+#         panel.grid.major.x =element_blank(),
+#         panel.grid.minor.x =element_blank()) +
+#   coord_flip()
+# g2
+#
+#
+# ggsave(filename = paste0(outdir,"/ML2_SplitViolin_Ori_Mean_130417.pdf"),
+#        plot = g2,
+#        scale = 3,
+#        width = wd,
+#        height = hg,
+#        units = "cm"
+# )
+#
+#
+# g3 <- ggplot(pdat, aes(offset_dens, loc, fill = splitv, group = interaction(pdat[['labels']], pdat[['splitv']]))) +
+#   geom_hline(yintercept = 0, colour = "ivory4") +
+#   geom_polygon() +
+#   geom_segment(data=sums, aes(x = offset, y = loc,
+#                               xend = offset_fix, yend = loc), inherit.aes=FALSE, alpha=1, size=.2, colour = "white") +
+#   geom_segment(data=means, aes(x = offset, y = loc, xend = offset_dens, yend = loc, colour = splitv), inherit.aes=FALSE, size=.8, alpha=1) +
+#   #geom_segment(data=dfSumS, aes(x = labloc+.4, y = ES, xend = labloc-.4, yend = ES, colour=EStype.f), inherit.aes=FALSE, size = .8) +
+#   geom_point(data=dfSumS, aes(x=labloc, y = ES, shape = EStype.f), inherit.aes=FALSE, alpha=1, size=5, colour = "#5aae61") +
+#   scale_x_continuous(name = '', breaks = unname(offsets), labels = names(offsets)) +
+#   scale_colour_manual('ES Distribution',values = c("#d1e5f0","#f4a582")) +
+#   scale_fill_manual('ES Distribution',values = c(cred,cblue)) +
+#   scale_shape_manual('',values = c(73,19,17)) +
+#   ylab('Effect Size r') +  theme_minimal() +
+#   theme(legend.position = "top",
+#         legend.background  =element_rect(),
+#         panel.grid.major.y =element_line(colour="grey80"),
+#         panel.grid.major.x =element_blank(),
+#         panel.grid.minor.x =element_blank()) +
+#   coord_flip()
+# g3
+#
+# ggsave(filename = paste0(outdir,"/","ML2_SplitViolin_Samples_Fixed_Ori_Mean_130417.pdf"),
+#        plot = g3,
+#        scale = 3,
+#        width = wd,
+#        height = hg,
+#        units = "cm"
+# )
