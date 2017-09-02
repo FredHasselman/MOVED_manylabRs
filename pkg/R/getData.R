@@ -92,6 +92,15 @@ get.analyses <- function(studies      = NA,
     # keytable <- ML2.key[s,]
     ML2.in <- get.info(ML2.key[s, ], colnames(ML2.df))
 
+
+    # Generate chain to select variables for the data frame and create a filter chain for the variables to use for analysis
+    # Info based on KeyTable information in study.vars, cases.include, site.include, params.NA
+    ML2.id <- get.chain(ML2.in)
+
+    # Apply the df chain to select relevant subset of variables
+    ML2.df <- eval(parse(text=paste("ML2.df", ML2.id$df)))
+
+
     if(!subset%in%"all"){
       if(subset%in%"WEIRD"){
         ML2.df <- ML2.df[ML2.df$Weird==1,]
@@ -100,12 +109,6 @@ get.analyses <- function(studies      = NA,
       }
     }
 
-    # Generate chain to select variables for the data frame and create a filter chain for the variables to use for analysis
-    # Info based on KeyTable information in study.vars, cases.include, site.include, params.NA
-    ML2.id <- get.chain(ML2.in)
-
-    # Apply the df chain to select relevant subset of variables
-    ML2.df <- eval(parse(text=paste("ML2.df", ML2.id$df)))
 
   if(NROW(ML2.df)>0){
 
