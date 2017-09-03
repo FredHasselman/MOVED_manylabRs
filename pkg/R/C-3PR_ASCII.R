@@ -1,15 +1,20 @@
 init <- function(){
-  # srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/"
-  # setwd(srcDir)
 
-  require(devtools)
-  srcDir <- "https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/"
+  srcDir <- "~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/pkg/R/"
+  source(paste0(srcDir,"C-3PR_ASCII.R"))
+  source(paste0(srcDir,'getData.R'))
+  source(paste0(srcDir,'inIT.R'))
+  source(paste0(srcDir,'ML2_variable_functions.R'))
+  source(paste0(srcDir,'fRedsRutils.R'))
 
-  devtools::source_url(paste0(srcDir,"C-3PR_ASCII.R"))
-  devtools::source_url(paste0(srcDir,'getData.R'))
-  devtools::source_url(paste0(srcDir,'inIT.R'))
-  devtools::source_url(paste0(srcDir,'ML2_variable_functions.R'))
-  devtools::source_url(paste0(srcDir,'fRedsRutils.R'))
+  # require(devtools)
+  # srcDir <- "https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/"
+  #
+  # devtools::source_url(paste0(srcDir,"C-3PR_ASCII.R"))
+  # devtools::source_url(paste0(srcDir,'getData.R'))
+  # devtools::source_url(paste0(srcDir,'inIT.R'))
+  # devtools::source_url(paste0(srcDir,'ML2_variable_functions.R'))
+  # devtools::source_url(paste0(srcDir,'fRedsRutils.R'))
 
   # Function inIT will load and -if necessary- install packages passed in a list (unIT will do the reverse operation).
   in.IT(c("MBESS","reshape2","plyr","tidyverse","metafor","RCurl","xlsx","broom","httr","compute.es","downloader","car", "lme4", "lmerTest","exact2x2","ggplot2","gplots","gridExtra","lattice","latticeExtra","rio","scales","lubridate"))
@@ -412,7 +417,7 @@ get.cases <- function(rule,study.vars,study.vars.labels,stat.params){
 #' @export
 #'
 #' @examples
-get.info <- function(keytable,cols){
+get.info <- function(keytable,cols, subset){
   # Read Variables and Parameters from:
   #keytable <- ML2.key[s,]
   study.vars         <- eval(parse(text=keytable[,'study.vars']))
@@ -423,6 +428,10 @@ get.info <- function(keytable,cols){
   cases              <- get.cases(cases.include, study.vars, study.vars.labels, stat.params)
   sites.include      <- eval(parse(text=keytable[,'study.sites.include']))
   if(sites.include[[1]][1]=="all"){sites.include[[1]]<-'is.character(source)'}
+  if(subset!="all"){
+    W <- ifelse(subset=="WEIRD",1,0)
+    sites.include[[1]] <- paste0(sites.include[[1]][1],' & (Weird == ',W,')')
+    }
 
   # Find correct columns in this dataset according to ML2.key: 'ML2.in$study.vars'
   id.vars  <- which(cols%in%c(unlist(study.vars),'uID','.id','age','sex','source','Source.Global','Source.Primary','Source.Secondary','Country','Location','Language','Weird','SubjectPool','Setting','Tablet','Pencil','Execution', 'StudyOrderN','IDiffOrderN'))

@@ -88,7 +88,7 @@ get.analyses <- function(studies      = NA,
 
     # Get info to create a dataset for the current study
     # keytable <- ML2.key[s,]
-    ML2.in <- get.info(ML2.key[s, ], colnames(ML2.df))
+    ML2.in <- get.info(ML2.key[s, ], colnames(ML2.df),subset)
 
 
     # Generate chain to select variables for the data frame and create a filter chain for the variables to use for analysis
@@ -99,13 +99,13 @@ get.analyses <- function(studies      = NA,
     ML2.df <- eval(parse(text=paste("ML2.df", ML2.id$df)))
 
 
-    if(!subset%in%"all"){
-      if(subset%in%"WEIRD"){
-        ML2.df <- ML2.df[ML2.df$Weird==1,]
-      } else {
-        ML2.df <- ML2.df[ML2.df$Weird==0,]
-      }
-    }
+    # if(!subset%in%"all"){
+    #   if(subset%in%"WEIRD"){
+    #     ML2.df <- ML2.df[ML2.df$Weird==1,]
+    #   } else {
+    #     ML2.df <- ML2.df[ML2.df$Weird==0,]
+    #   }
+    # }
 
 
   if(NROW(ML2.df)>0){
@@ -373,6 +373,9 @@ get.analyses <- function(studies      = NA,
                 )
             }
 
+          colnames(SourceInfo) <- c("name","name.GLobal",colnames(SourceInfoTable)[3:NCOL(SourceInfoTable)])
+          rownames(SourceInfo) <- NULL
+
           test  <- describe$test
           descr <- describe$descr.raw
           outputSource[[g]] <- get.output(key      = ML2.key[s,],
@@ -464,6 +467,7 @@ get.analyses <- function(studies      = NA,
     rm(ML2.in, ML2.var, ML2.id, ML2.df, ML2.sr, outputSource, dataSource, raw.df, clean.df, descr, SourceInfo, nMin1, nMin2, listIT)
 
   } else { # if nrow > 0
+
     disp(paste(s, ML2.key$study.analysis[[s]],"- SKIPPED"), header = FALSE)
 
     ML2.output[[s]]  <- NULL

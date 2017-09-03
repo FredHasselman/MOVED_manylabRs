@@ -1,11 +1,15 @@
 # Code to bulk generate analyses, saves consoe output to a log file.
+#
+# devtools::source_url('https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/C-3PR_ASCII.R')
+# init()
 
-devtools::source_url('https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/C-3PR_ASCII.R')
+source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/pkg/R/C-3PR_ASCII.R')
 init()
 
+
 # Setup variables ---------------------------------------------------------------------------------------------------
-tp <- 1
-subset = "WEIRD"
+tp <- 3
+subset = "all"
 
 ML2.key <- ML2.key <- get.GoogleSheet(data='ML2masteRkey')$df
 ML2.key <- ML2.key[!is.na(ML2.key$unique.id),]

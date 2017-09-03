@@ -1,10 +1,14 @@
 # SPLIT VIOLIN PLOTS - MANYLABS 2 -
 # corresponding coder: Fred Hasselman (https://osf.io/ujgs6/)
 
-require(devtools)
-srcDir <- "https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/"
-devtools::source_url(paste0(srcDir,"C-3PR_ASCII.R"))
+# require(devtools)
+# srcDir <- "https://raw.githubusercontent.com/FredHasselman/manylabRs/master/pkg/R/"
+# devtools::source_url(paste0(srcDir,"C-3PR_ASCII.R"))
+# init()
+
+source('~/Library/Mobile Documents/com~apple~CloudDocs/GitHub/ManyLabRs/manylabRs/pkg/R/C-3PR_ASCII.R')
 init()
+
 
 ML2.key     <- get.GoogleSheet(data='ML2masteRkey')$df
 oriEffects  <- ML2.key[ML2.key$study.figure2.include==1,]   #[nchar(ML2.key$orig.stat.type)>0, c(2:5,22:28,34:36)]
