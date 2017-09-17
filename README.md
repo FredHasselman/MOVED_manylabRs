@@ -1,3 +1,11 @@
+
+The ManyLabs repositories moved here:  https://github.com/ManyLabsOpenScience
+
+Documentation and tutorials are here: https://manylabsopenscience.github.io
+
+
+--------------
+
 # manylabRs
 
 A collection of R scripts, data, materials and documentation for the ManLabs projects
